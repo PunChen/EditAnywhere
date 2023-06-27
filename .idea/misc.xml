@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable-v21/ic_menu_camera.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/ic_android_black_24dp.xml" value="0.3925" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/ic_app_note.xml" value="0.3925" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/ic_delete.xml" value="0.3375" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/ic_launcher_background.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/ic_menu_about.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/ic_menu_list.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/ic_menu_settings.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/drawable/side_nav_bar.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/activity_entry_info.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/activity_main.xml" value="0.31354166666666666" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/alter_dialog.xml" value="0.3099615220179564" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/app_bar_main.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/content_main.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/edittext_dialog.xml" value="0.4548952543822146" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/entry_content_item.xml" value="0.4548952543822146" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/entry_item.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_about.xml" value="0.3333333333333333" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_entry_content.xml" value="0.4548952543822146" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_entry_list.xml" value="0.25" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_entrylist.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_gallery.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_home.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_item.xml" value="0.3877725523728089" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_item_list.xml" value="0.274903805044891" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_settings.xml" value="0.4466666666666667" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/fragment_slideshow.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/layout/nav_header_main.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/menu/activity_main2_drawer.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/menu/entry_edit_menu.xml" value="0.4548952543822146" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/menu/main.xml" value="0.3875" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/menu/menu_add_entry.xml" value="0.3227875160324925" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/menu/menu_edit_entry_content.xml" value="0.4548952543822146" />
+        <entry key="..\:/Users/chenhao/AndroidStudioProjects/EditAnywhere/app/src/main/res/menu/menu_edit_settings.xml" value="0.3099615220179564" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

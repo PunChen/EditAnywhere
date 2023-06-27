@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.editanywhere">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_app_note"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/ic_app_note"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.EditAnywhere"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".EntryInfoActivity"
+            android:exported="false"
+            android:theme="@style/Theme.EditAnywhere.NoActionBar" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.EditAnywhere.NoActionBar">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="justify font size everywhere" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="53" />
+    </application>
+
+</manifest>

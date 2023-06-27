@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="@dimen/dp_5"
+        android:text="@string/dialog_title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/tv_dialog_title"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"/>
+    <EditText
+        app:layout_constraintTop_toBottomOf="@id/tv_dialog_title"
+        android:id="@+id/et_dialog_input_text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="@dimen/dp_0"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_dialog_input_text"
+        android:id="@+id/ll_bt_container"
+        android:layoutDirection="ltr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/bt_ensure"
+            android:text="@string/dialog_ensure_tip"
+            app:layout_constraintTop_toBottomOf="@id/et_dialog_input_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/bt_cancel"
+            android:text="@string/dialog_cancel_tip"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/et_dialog_input_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

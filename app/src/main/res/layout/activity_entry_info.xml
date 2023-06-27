@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EntryInfoActivity">
+    <com.google.android.material.appbar.AppBarLayout
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/abl_app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.EditAnywhere.AppBarOverlay">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/tb_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/Theme.EditAnywhere.PopupOverlay"
+            app:collapseIcon="@drawable/ic_menu_settings"
+            app:title="@string/entry_info"
+            android:layout_gravity="center"
+            app:navigationIcon="@drawable/ic_back"
+            app:menu="@menu/entry_edit_menu"
+            >
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/tv_entry_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/dp_1"
+        android:padding="@dimen/dp_5"
+        android:text="@string/entry_name"
+        android:textSize="@dimen/sp_20"
+        app:layout_constraintTop_toBottomOf="@+id/abl_app_bar_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+    <TextView
+        android:id="@+id/tv_entry_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_5"
+        android:text="@string/entry_version"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_entry_name"
+        app:layout_constraintLeft_toRightOf="@id/tv_entry_name" />
+
+    <TextView
+        android:id="@+id/tv_create_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dp_10"
+        android:padding="@dimen/dp_5"
+        android:text="@string/entry_create_time"
+        android:textSize="@dimen/sp_15"
+        app:drawableLeftCompat="@drawable/ic_create_time"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_entry_name" />
+
+    <TextView
+        android:id="@+id/tv_update_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/dp_10"
+        android:padding="@dimen/dp_5"
+        android:text="@string/entry_update_time"
+        android:textSize="@dimen/sp_15"
+        app:drawableLeftCompat="@drawable/ic_update_time"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_create_time" />
+<!--  recycle view 显示不全   https://blog.csdn.net/FrancisBingo/article/details/105576981-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_entry_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0"
+        android:paddingHorizontal="@dimen/dp_5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_update_time" />
+</androidx.constraintlayout.widget.ConstraintLayout>
