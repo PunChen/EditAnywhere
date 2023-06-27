@@ -9,7 +9,7 @@ public class ProjectInfoUtil {
         relatedProjectUrl.put("Java后端","https://github.com/PunChen/AGI-Demo");
         relatedProjectUrl.put("MybatisGenerator","https://github.com/PunChen/MybatisGenerator");
         relatedProjectUrl.put("Vue前端","https://github.com/PunChen/AGI-Demo-Vue");
-        relatedProjectUrl.put("Android前端","");
+        relatedProjectUrl.put("Android前端","https://github.com/PunChen/EditAnywhere");
     }
 
     public static String getRelatedProjectInfo(){
