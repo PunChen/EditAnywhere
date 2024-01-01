@@ -1,6 +1,7 @@
 package com.example.editanywhere.entity.model;
 
-import android.os.Parcelable;
+import androidx.room.ColumnInfo;
+import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,41 +20,49 @@ public class Entry implements Serializable {
     /**
      * 自增主键
      */
+    @PrimaryKey(autoGenerate = true)
     private Integer id;
 
     /**
      * 词条名称
      */
+    @ColumnInfo(name = "entryName")
     private String entryName;
 
     /**
      * 其他词条名称
      */
+    @ColumnInfo(name = "entryNameOther")
     private String entryNameOther;
 
     /**
      * 版本
      */
+    @ColumnInfo(name = "version")
     private Integer version;
 
     /**
      * 创建时间
      */
+    @ColumnInfo(name = "createTime")
     private Date createTime;
 
     /**
      * 更新时间
      */
+    @ColumnInfo(name = "updateTime")
     private Date updateTime;
 
     /**
      * 是否有效
      */
+    @ColumnInfo(name = "valid")
     private Boolean valid;
 
     /**
      * 词条内容列表
      */
+    @ColumnInfo(name = "entryContent")
     private String entryContent;
 
     public Integer getId() {

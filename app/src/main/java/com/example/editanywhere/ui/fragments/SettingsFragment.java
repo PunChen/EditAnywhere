@@ -19,8 +19,9 @@ import com.example.editanywhere.utils.SPUtil;
 
 public class SettingsFragment extends CustomFragment {
 
-    private FragmentSettingsBinding  binding;
+    private FragmentSettingsBinding binding;
     private MainActivity fromActivity;
+
     public SettingsFragment(MainActivity fromActivity) {
         this.fromActivity = fromActivity;
     }
@@ -37,7 +38,7 @@ public class SettingsFragment extends CustomFragment {
     }
 
 
-    private void initView(){
+    private void initView() {
         final Toolbar toolbar = binding.tbToolbar;
         toolbar.setNavigationOnClickListener(view -> fromActivity.openDrawer());
         toolbar.getMenu().findItem(R.id.menu_settings_reset).setOnMenuItemClickListener(item -> {
@@ -45,32 +46,44 @@ public class SettingsFragment extends CustomFragment {
             return false;
         });
         String address = OKHttpUtil.getUrl();
-        binding.etSettingServerAddress.setText(address);
+        binding.incEtLineServerAddress.etEditLineContent.setText(address);
         //ip修改按钮
-        binding.ibBtEditServerAddress.setOnClickListener(v -> {
-            binding.ibBtEditServerAddress.setVisibility(View.GONE);
-            binding.etSettingServerAddress.setEnabled(true);
-            binding.ibBtEnsureServerAddress.setVisibility(View.VISIBLE);
+        binding.incEtLineServerAddress.ibBtEditLineEdit.setOnClickListener(v -> {
+            binding.incEtLineServerAddress.ibBtEditLineEdit.setVisibility(View.GONE);
+            binding.incEtLineServerAddress.etEditLineContent.setEnabled(true);
+            binding.incEtLineServerAddress.ibBtEditLineEnsure.setVisibility(View.VISIBLE);
         });
         //ip确认按钮
-        binding.ibBtEnsureServerAddress.setOnClickListener(v -> {
+        binding.incEtLineServerAddress.ibBtEditLineEnsure.setOnClickListener(v -> {
             // update ip
             Application application = fromActivity.getApplication();
-            String ip = binding.etSettingServerAddress.getText().toString();
-            SPUtil.putString(application,SPUtil.TAG_SERVER_ADDRESS,ip);
-            binding.ibBtEditServerAddress.setVisibility(View.VISIBLE);
-            binding.etSettingServerAddress.setEnabled(false);
-            binding.ibBtEnsureServerAddress.setVisibility(View.GONE);
+            String ip = binding.incEtLineServerAddress.etEditLineContent.getText().toString();
+            SPUtil.putString(application, SPUtil.TAG_SERVER_ADDRESS, ip);
+
+            binding.incEtLineServerAddress.ibBtEditLineEdit.setVisibility(View.VISIBLE);
+            binding.incEtLineServerAddress.etEditLineContent.setEnabled(false);
+            binding.incEtLineServerAddress.ibBtEditLineEnsure.setVisibility(View.GONE);
 
         });
+
+        binding.incCheckLineLocalMode.tvCheckLineContent.setText(R.string.check_line_content_local_mode);
+        binding.incCheckLineLocalMode.cbLineCheck.setOnClickListener(v -> {
+            setWorkMode();
+        });
+
+
     }
 
-    private void resetSettings(){
+    private void resetSettings() {
         String address = OKHttpUtil.server_address;
-        binding.etSettingServerAddress.setText(address);
+        binding.incEtLineServerAddress.etEditLineContent.setText(address);
         OKHttpUtil.resetUrl();
     }
 
+    private void setWorkMode() {
+        boolean checked = binding.incCheckLineLocalMode.cbLineCheck.isChecked();
+        SPUtil.putBoolean(fromActivity.getApplication(), SPUtil.TAG_WORKING_MODE, checked);
+    }
 
 
     @Override

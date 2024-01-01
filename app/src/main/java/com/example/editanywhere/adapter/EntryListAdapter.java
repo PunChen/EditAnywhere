@@ -18,10 +18,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.editanywhere.EntryInfoActivity;
 import com.example.editanywhere.R;
+import com.example.editanywhere.dao.EntryDao;
+import com.example.editanywhere.dao.EntryDatabase;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.utils.ApiUti;
 import com.example.editanywhere.utils.OKHttpUtil;
@@ -226,6 +229,15 @@ public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.View
         message.what = MSG_ID_UPDATE_LIST;
 //        message.getData().putString(MSG_KEY_TOAST_MSG,"initList with params");
         handler.sendMessage(message);
+    }
+
+    private EntryDatabase entryDatabase;
+    private EntryDao entryDao;
+    public void initListLocal() {
+        entryDatabase = Room.databaseBuilder(context, EntryDatabase.class, "entry").allowMainThreadQueries().build();
+        entryDao = entryDatabase.getentryDao();
+        List<Entry> entries = entryDao.findByValid(true);
+        initList(entries);
     }
 
     private void postDeleteEntry(Entry entry,int pos){

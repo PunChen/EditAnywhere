@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,73 +7,40 @@
     tools:context=".ui.fragments.SettingsFragment">
 
     <com.google.android.material.appbar.AppBarLayout
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:id="@+id/abl_app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.EditAnywhere.AppBarOverlay">
+        android:theme="@style/Theme.EditAnywhere.AppBarOverlay"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/tb_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.EditAnywhere.PopupOverlay"
-            app:collapseIcon="@drawable/ic_menu_settings"
-            app:title="@string/settings_title"
             android:layout_gravity="center"
-            app:navigationIcon="@drawable/ic_menu_list"
+            android:background="?attr/colorPrimary"
+            app:collapseIcon="@drawable/ic_menu_settings"
             app:menu="@menu/menu_edit_settings"
-            >
-        </androidx.appcompat.widget.Toolbar>
+            app:navigationIcon="@drawable/ic_menu_list"
+            app:popupTheme="@style/Theme.EditAnywhere.PopupOverlay"
+            app:title="@string/settings_title"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.cardview.widget.CardView
-        android:layout_margin="@dimen/dp_10"
-        app:cardCornerRadius="@dimen/dp_10"
-        app:layout_constraintTop_toBottomOf="@id/abl_app_bar_layout"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <EditText
-                android:enabled="false"
-                android:id="@+id/et_setting_server_address"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:layout_margin="@dimen/dp_5"
-                android:autofillHints="name"
-                android:hint="@string/settings_server_address"
-                android:inputType="textUri"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <ImageButton
-                android:visibility="gone"
-                android:id="@+id/ib_bt_ensure_server_address"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/dp_10"
-                android:background="@drawable/ic_done_24"
-                android:contentDescription="@string/settings_button_edit"
-                android:padding="@dimen/dp_15"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-            <ImageButton
-                android:id="@+id/ib_bt_edit_server_address"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/dp_10"
-                android:background="@drawable/ic_edit"
-                android:contentDescription="@string/settings_button_edit"
-                android:padding="@dimen/dp_15"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/abl_app_bar_layout">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+            android:id="@+id/inc_et_line_server_address"
+            layout="@layout/edit_line" />
 
-    </androidx.cardview.widget.CardView>
+        <include
+            android:id="@+id/inc_check_line_local_mode"
+            layout="@layout/check_line" />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
