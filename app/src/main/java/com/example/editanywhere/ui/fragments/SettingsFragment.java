@@ -82,7 +82,7 @@ public class SettingsFragment extends CustomFragment {
 
     private void setWorkMode() {
         boolean checked = binding.incCheckLineLocalMode.cbLineCheck.isChecked();
-        SPUtil.putBoolean(fromActivity.getApplication(), SPUtil.TAG_WORKING_MODE, checked);
+        SPUtil.putBoolean(fromActivity.getApplication(), SPUtil.TAG_WORKING_MODE_LOCAL, checked);
     }
 
 
@@ -92,9 +92,5 @@ public class SettingsFragment extends CustomFragment {
         binding = null;
     }
 
-    @Override
-    public void onUpdate(Bundle bundle) {
-
-    }
 
 }

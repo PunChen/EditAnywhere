@@ -5,5 +5,4 @@ import androidx.fragment.app.Fragment;
 
 
 public  abstract class CustomFragment extends Fragment{
-     public abstract void onUpdate(Bundle bundle);
 }

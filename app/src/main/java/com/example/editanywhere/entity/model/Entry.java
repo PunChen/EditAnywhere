@@ -1,13 +1,25 @@
 package com.example.editanywhere.entity.model;
 
 import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
+
+import com.example.editanywhere.utils.DBConst;
+import com.example.editanywhere.utils.DateUtil;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+
 /**
  * 词条表
  * tab_entry
@@ -16,17 +28,20 @@ import lombok.extern.log4j.Log4j2;
  */
 @Data
 @Log4j2
+@Entity(tableName = DBConst.ENTRY_DB_NAME, indices = {@Index(value = {"entryName", "version", "valid"}, unique = true)})
+@TypeConverters({DateConverter.class, ListConverter.class})
 public class Entry implements Serializable {
     /**
      * 自增主键
      */
     @PrimaryKey(autoGenerate = true)
-    private Integer id;
+    private Long id;
 
     /**
      * 词条名称
      */
-    @ColumnInfo(name = "entryName")
+    @ColumnInfo(name = "entryName", defaultValue = "")
+    @NonNull
     private String entryName;
 
     /**
@@ -38,38 +53,39 @@ public class Entry implements Serializable {
     /**
      * 版本
      */
-    @ColumnInfo(name = "version")
+    @ColumnInfo(name = "version", defaultValue = "0")
+    @NonNull
     private Integer version;
 
     /**
      * 创建时间
      */
     @ColumnInfo(name = "createTime")
-    private Date createTime;
+    private Long createTime;
 
     /**
      * 更新时间
      */
     @ColumnInfo(name = "updateTime")
-    private Date updateTime;
+    private Long updateTime;
 
     /**
      * 是否有效
      */
-    @ColumnInfo(name = "valid")
+    @ColumnInfo(name = "valid", defaultValue = "1")
     private Boolean valid;
 
     /**
      * 词条内容列表
      */
     @ColumnInfo(name = "entryContent")
-    private String entryContent;
+    private List<String> entryContent;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -78,7 +94,7 @@ public class Entry implements Serializable {
     }
 
     public void setEntryName(String entryName) {
-        this.entryName = entryName == null ? null : entryName.trim();
+        this.entryName = entryName;
     }
 
     public String getEntryNameOther() {
@@ -86,7 +102,7 @@ public class Entry implements Serializable {
     }
 
     public void setEntryNameOther(String entryNameOther) {
-        this.entryNameOther = entryNameOther == null ? null : entryNameOther.trim();
+        this.entryNameOther = entryNameOther;
     }
 
     public Integer getVersion() {
@@ -97,19 +113,19 @@ public class Entry implements Serializable {
         this.version = version;
     }
 
-    public Date getCreateTime() {
+    public Long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(Long createTime) {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime() {
+    public Long getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(Long updateTime) {
         this.updateTime = updateTime;
     }
 
@@ -121,12 +137,12 @@ public class Entry implements Serializable {
         this.valid = valid;
     }
 
-    public String getEntryContent() {
+    public List<String> getEntryContent() {
         return entryContent;
     }
 
-    public void setEntryContent(String entryContent) {
-        this.entryContent = entryContent == null ? null : entryContent.trim();
+    public void setEntryContent(List<String> entryContent) {
+        this.entryContent = entryContent;
     }
 
     @Override

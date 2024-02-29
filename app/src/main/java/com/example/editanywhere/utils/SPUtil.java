@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 
 public class SPUtil {
     public final static String TAG_SERVER_ADDRESS = "TAG_SERVER_ADDRESS";
-    public final static String TAG_WORKING_MODE = "TAG_WORKING_MODE";
+    public final static String TAG_WORKING_MODE_LOCAL = "TAG_WORKING_MODE_LOCAL";
     public final static String TAG_SP_DEFAULT_NAME="default";
 
     public static String getString(Application application, String key, String def){

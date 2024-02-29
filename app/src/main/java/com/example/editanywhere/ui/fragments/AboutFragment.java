@@ -59,8 +59,4 @@ public class AboutFragment extends CustomFragment {
     }
 
 
-    @Override
-    public void onUpdate(Bundle bundle) {
-
-    }
 }

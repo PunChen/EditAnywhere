@@ -22,11 +22,14 @@ import com.alibaba.fastjson2.JSON;
 import com.example.editanywhere.adapter.EntryContentAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.service.EntryService;
 import com.example.editanywhere.utils.ApiUti;
 import com.example.editanywhere.utils.DateUtil;
 import com.example.editanywhere.databinding.ActivityEntryInfoBinding;
+import com.example.editanywhere.utils.EntryServiceCallback;
 import com.example.editanywhere.utils.OKHttpUtil;
 import com.example.editanywhere.utils.OkHttpCallBack;
+import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +47,8 @@ public class EntryInfoActivity extends AppCompatActivity {
 //        setSupportActionBar(binding.tbToolbar);
 
         initToolbar();
-        initView();
+
+        initEntry();
     }
 
     private void initToolbar(){
@@ -56,9 +60,8 @@ public class EntryInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void initView(){
-        Intent intent = getIntent();
-        entry = (Entry) intent.getSerializableExtra(Entry.class.getSimpleName());
+    private void initViewByEntry(Entry entry) {
+        this.entry = entry;
         binding.tvEntryName.setText(entry.getEntryName());
         binding.tvEntryVersion.setText("v" + entry.getVersion());
         binding.tvCreateTime.setText(DateUtil.dateFormat(entry.getCreateTime(),DateUtil.DEFAULT_DATE_FORMAT));
@@ -68,6 +71,23 @@ public class EntryInfoActivity extends AppCompatActivity {
         binding.rvEntryContent.setLayoutManager(layoutManager);
         binding.rvEntryContent.setAdapter(entryContentAdapter);
         entryContentAdapter.initList(entry);
+    }
+
+    private void initEntry(){
+        Intent intent = getIntent();
+
+        String entryName = intent.getStringExtra(Entry.class.getSimpleName());
+        EntryService.getInstance(EntryInfoActivity.this).queryByEntryName(entryName, new EntryServiceCallback() {
+            @Override
+            public void onFinish(String errMsg) {
+                ToastUtil.toast(EntryInfoActivity.this, errMsg);
+            }
+            @Override
+            public void onQueryByEntryName(Entry result) {
+                initViewByEntry(result);
+            }
+        });
+
     }
 
     private void showAddEntryContentAlertDialog() {
@@ -129,22 +149,21 @@ public class EntryInfoActivity extends AppCompatActivity {
         handler.sendMessage(message);
     }
     private void postAddEntryContent(String addText){
-        String entryName = entry.getEntryName();
         List<String> newEntryContentList = new ArrayList<>(entryContentAdapter.getEntryContentList());
         newEntryContentList.add(0,addText);
-        OKHttpUtil.post(ApiUti.API_ENTRY_EDIT,
-                new ApiUti.Builder().add("entryName", entryName).add("entryContent", JSON.toJSON(newEntryContentList)).build(),
-                new OkHttpCallBack() {
+        EntryService.getInstance(EntryInfoActivity.this).editEntryContentByEntryName(entry.getEntryName(),
+                newEntryContentList,
+                new EntryServiceCallback() {
                     @Override
-                    public void onSuccess(String res) {
-                        Entry entry = JSON.parseObject(res,Entry.class);
+                    public void onEditEntryContentByEntryName(Entry result) {
                         syncAdapterData(addText);
                     }
+
                     @Override
-                    public void onError(String msg) {
-                        makeToast("onError: "+msg);
+                    public void onFinish(String errMsg) {
+                        ToastUtil.toast(EntryInfoActivity.this, errMsg);
                     }
-                });
+        });
     }
     private void syncAdapterData(String addText){
         entryContentAdapter.onDataSetInsertOneSync(0,addText);
