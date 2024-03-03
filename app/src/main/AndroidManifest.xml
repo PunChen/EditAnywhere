@@ -13,6 +13,15 @@
         android:theme="@style/Theme.EditAnywhere"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".EntryInfoActivity"
             android:exported="false"
             android:theme="@style/Theme.EditAnywhere.NoActionBar" />
@@ -21,10 +30,6 @@
             android:exported="true"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.EditAnywhere.NoActionBar">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
         </activity>
 
         <meta-data

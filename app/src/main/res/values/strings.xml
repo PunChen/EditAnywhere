@@ -28,20 +28,26 @@
     <string name="entry_content_delete">删除</string>
 
 
-<!--    对话框dialog-->
+    <!--    对话框dialog-->
     <string name="dialog_title">标题</string>
     <string name="dialog_input_text">输入文本</string>
     <string name="dialog_ensure_tip">确定提示</string>
     <string name="dialog_cancel_tip">取消提示</string>
 
-<!--    服务器设置相关-->
+    <!--    服务器设置相关-->
     <string name="settings_title">设置</string>
     <string name="settings_server_address">设置服务器地址</string>
     <string name="settings_button_edit">设置修改按钮</string>
     <string name="settings_button_ensure">设置修改按钮</string>
     <string name="settings_menu_reset">恢复默认</string>
-<!--关于-->
+    <!--关于-->
     <string name="about_title">关于标题</string>
     <string name="about_content">关于内容</string>
 
+    <!--编辑框-->
+    <string name="edit_line_default_content">输入内容</string>
+    <string name="edit_line_edit_desc">编辑框修改</string>
+    <string name="edit_line_edit_ensure">编辑框确认</string>
+    <string name="check_line_content">检查框内容描述</string>
+    <string name="check_line_content_local_mode">是否开启本地模式</string>
 </resources>

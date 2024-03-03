@@ -44,11 +44,11 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if(id == R.id.nav_entry_list){
-                switchFragmentWithBundle(null,entryListFragment);
+                switchFragment(entryListFragment);
             }else if(id == R.id.nav_settings){
-                switchFragmentWithBundle(null,settingsFragment);
+                switchFragment(settingsFragment);
             }else if(id == R.id.nav_about){
-                switchFragmentWithBundle(null,aboutFragment);
+                switchFragment(aboutFragment);
             }
             // 关闭抽屉
             drawer.close();
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 .add(R.id.fragment_main,settingsFragment)
                 .add(R.id.fragment_main,aboutFragment)
         .commit();
-        switchFragmentWithBundle(null,entryListFragment);
+        switchFragment(entryListFragment);
     }
 
     // 统一的异步线程ui处理
@@ -97,12 +97,11 @@ public class MainActivity extends AppCompatActivity {
         handler.sendMessage(message);
     }
     //统一的fragment切换
-    public void switchFragmentWithBundle(Bundle bundle,final CustomFragment targetFragment){
+    public void switchFragment(final CustomFragment targetFragment){
         FragmentManager manager = getSupportFragmentManager();
         for(Fragment fragment:fragmentArray){
             manager.beginTransaction().hide(fragment).commitNow();
         }
-        targetFragment.onUpdate(bundle);
         manager.beginTransaction().show(targetFragment).commit();
     }
 
