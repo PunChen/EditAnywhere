@@ -15,7 +15,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson2.JSON;
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.adapter.EntryListAdapter;
@@ -23,30 +22,24 @@ import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
 import com.example.editanywhere.databinding.FragmentEntryListBinding;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.service.EntryService;
-import com.example.editanywhere.service.LocalEntryService;
-import com.example.editanywhere.service.RemoteEntryService;
-import com.example.editanywhere.utils.ApiUti;
 import com.example.editanywhere.utils.EntryServiceCallback;
-import com.example.editanywhere.utils.OKHttpUtil;
-import com.example.editanywhere.utils.OkHttpCallBack;
-import com.example.editanywhere.utils.SPUtil;
 import com.example.editanywhere.utils.ToastUtil;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class EntryListFragment extends CustomFragment {
 
+    private static final String TAG = "EntryListFragment";
+    private final Activity activity;
     private FragmentEntryListBinding binding;
     private EntryListAdapter entryListAdapter;
-    private final Activity activity;
 
-    private static final String TAG = "EntryListFragment";
-    public EntryListFragment(Activity activity){
+    public EntryListFragment(Activity activity) {
         this.activity = activity;
     }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -63,7 +56,7 @@ public class EntryListFragment extends CustomFragment {
         return root;
     }
 
-    private void initToolbar(){
+    private void initToolbar() {
         final Toolbar toolbar = binding.toolbar;
         toolbar.setNavigationOnClickListener(v -> {
             if (activity instanceof MainActivity) {
@@ -82,28 +75,32 @@ public class EntryListFragment extends CustomFragment {
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
+
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText == null || "".equals(newText)){
-                    EntryService.getInstance(activity).queryAll( new EntryServiceCallback() {
+                if (newText == null || "".equals(newText)) {
+                    EntryService.getInstance(activity).queryAll(new EntryServiceCallback<List<Entry>>() {
                         @Override
-                        public void onQueryAll(List<Entry> result) {
+                        public void onSuccess(List<Entry> result) {
                             refreshEntryList(result);
                         }
+
                         @Override
-                        public void onFinish(String errMsg) {
+                        public void onFailure(String errMsg) {
                             ToastUtil.toast(activity, errMsg);
                         }
 
+
                     });
                 } else {
-                    EntryService.getInstance(activity).queryByEntryName(newText, new EntryServiceCallback() {
+                    EntryService.getInstance(activity).queryByEntryName(newText, new EntryServiceCallback<Entry>() {
                         @Override
-                        public void onQueryByEntryName(Entry result) {
+                        public void onSuccess(Entry result) {
                             refreshEntryList(List.of(result));
                         }
+
                         @Override
-                        public void onFinish(String errMsg) {
+                        public void onFailure(String errMsg) {
                             ToastUtil.toast(activity, errMsg);
                         }
                     });
@@ -115,7 +112,7 @@ public class EntryListFragment extends CustomFragment {
     }
 
     private void showAddEntryAlertDialog() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder (activity);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
         EditText editText = new EditText(activity);
         editText.setHint("词条名称");
         //通过AlertDialog.Builder创建出一个AlertDialog的实例
@@ -125,10 +122,10 @@ public class EntryListFragment extends CustomFragment {
         //确定按钮的点击事件
         dialog.setPositiveButton("确认", (dialog12, which) -> {
             String text = editText.getText().toString();
-            if(!"".equals(text)){
+            if (!"".equals(text)) {
                 entryListAdapter.tryAddEntry(text);
-            }else {
-                Toast.makeText(activity,"input can not be empty!",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(activity, "input can not be empty!", Toast.LENGTH_SHORT).show();
             }
             dialog12.dismiss();
         });
@@ -148,7 +145,7 @@ public class EntryListFragment extends CustomFragment {
             entryList = new ArrayList<>();
         }
         // fragment 加载数据
-        if(entryListAdapter != null){
+        if (entryListAdapter != null) {
             entryListAdapter.initList(entryList);
         }
     }

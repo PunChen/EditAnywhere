@@ -1,8 +1,8 @@
 package com.example.editanywhere.entity.view;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class SimpleRequest {
@@ -17,7 +17,6 @@ public class SimpleRequest {
 
     private String entryName;
     private List<String> entryContent;
-
 
 
 }

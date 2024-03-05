@@ -4,16 +4,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
 
 import com.example.editanywhere.utils.DBConst;
-import com.example.editanywhere.utils.DateUtil;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import lombok.Data;
