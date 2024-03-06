@@ -111,6 +111,13 @@ public class EntryListFragment extends CustomFragment {
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e(TAG, "onResume: refresh all entry list");
+        entryListAdapter.refreshAll();
+    }
+
     private void showAddEntryAlertDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
         EditText editText = new EditText(activity);

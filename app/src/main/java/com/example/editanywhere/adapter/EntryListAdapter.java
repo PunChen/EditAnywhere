@@ -67,6 +67,10 @@ public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.View
     public EntryListAdapter(Activity activity) {
         this.activity = activity;
         this.context = activity;
+        refreshAll();
+    }
+
+    public void refreshAll() {
         EntryService.getInstance(activity).queryAll(new EntryServiceCallback<List<Entry>>() {
             @Override
             public void onSuccess(List<Entry> result) {

@@ -6,17 +6,15 @@ import com.alibaba.fastjson2.JSON;
 import com.example.editanywhere.entity.model.Entry;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class EntryUtil {
+    public static final int EXPORT_BATCH_SIZE = 10;
     private static final Map<String, Integer> FIELD_ORDER = new HashMap<>();
     private static final String TAG = "EntryUtil";
-
-    public static final int EXPORT_BATCH_SIZE = 10;
 
     static {
         Field[] fields = Entry.class.getDeclaredFields();

@@ -36,9 +36,9 @@ public class LocalEntryService extends EntryService {
 
     @Override
     public void deleteByEntryName(String entryName, EntryServiceCallback<Boolean> callback) {
-        Entry latest = entryDao.queryLatestByEntryName(entryName, true);
+        Entry latest = entryDao.queryLatestByEntryName(entryName);
         if (latest != null) {
-            entryDao.deleteByEntryName(entryName, false);
+            entryDao.deleteByEntryName(entryName);
             callback.onSuccess(true);
         } else {
             callback.onFailure("deleteByEntryName failed, entryName not exists: " + entryName);
@@ -48,7 +48,7 @@ public class LocalEntryService extends EntryService {
 
     @Override
     public void queryAll(EntryServiceCallback<List<Entry>> callback) {
-        List<Entry> entries = entryDao.queryByValid(true);
+        List<Entry> entries = entryDao.queryAll();
         List<Entry> result = new ArrayList<>();
         entries.stream().collect(
                         Collectors.groupingBy(Entry::getEntryName,
@@ -59,7 +59,7 @@ public class LocalEntryService extends EntryService {
 
     @Override
     public void queryByEntryName(String entryName, EntryServiceCallback<Entry> callback) {
-        Entry latest = entryDao.queryLatestByEntryName(entryName, true);
+        Entry latest = entryDao.queryLatestByEntryName(entryName);
         if (latest != null) {
             callback.onSuccess(latest);
         } else {
@@ -86,7 +86,7 @@ public class LocalEntryService extends EntryService {
 
     @Override
     public void editEntryContentByEntryName(String entryName, List<String> entryContent, EntryServiceCallback<Entry> callback) {
-        Entry latest = entryDao.queryLatestByEntryName(entryName, true);
+        Entry latest = entryDao.queryLatestByEntryName(entryName);
         if (latest != null) {
             latest.setId(null);
             latest.setEntryContent(entryContent);
@@ -104,7 +104,7 @@ public class LocalEntryService extends EntryService {
         List<Long> idList = new ArrayList<>();
         for (Entry entry : entryList) {
             Long id = addByEntryNameAndContent(entry.getEntryName(), entry.getEntryContent());
-            if (Objects.equals(id, EntryDao.INSERT_FAIL_RETURN_ID)) {
+            if (Objects.equals(id, EntryDao.INSERT_FAIL_RETURN_ID) || id == null) {
                 Log.e(TAG, "addByBatch: fail for " + entry);
                 continue;
             }
@@ -121,7 +121,7 @@ public class LocalEntryService extends EntryService {
 
     @Override
     public void queryAllByBatch(int batchSize, EntryServiceBatchQueryCallback callback) {
-        List<Long> idList = entryDao.queryAllIds(true);
+        List<Long> idList = entryDao.queryAllIds();
         callback.onStart(idList.size());
         int curCount = 0;
         int totalCount = idList.size();
@@ -148,7 +148,7 @@ public class LocalEntryService extends EntryService {
     }
 
     private Long addByEntryNameAndContent(String entryName, List<String> entryContent) {
-        Entry latest = entryDao.queryLatestByEntryName(entryName, true);
+        Entry latest = entryDao.queryLatestByEntryName(entryName);
         if (latest != null) {
             Log.e(TAG, "addByEntryNameAndContent: " + "entry: " + entryName + " exists");
             return null;
@@ -158,7 +158,6 @@ public class LocalEntryService extends EntryService {
         entry.setEntryContent(entryContent);
         entry.setCreateTime(new Date().getTime());
         entry.setUpdateTime(new Date().getTime());
-        entry.setValid(true);
         entry.setVersion(1);
         entry.setEntryNameOther("");
         return entryDao.insertEntry(entry);

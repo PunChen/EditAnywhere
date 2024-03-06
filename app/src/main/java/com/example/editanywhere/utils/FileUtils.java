@@ -42,6 +42,7 @@ public class FileUtils {
 
 
     private static final Set<String> WHITE_SET = new HashSet<>();
+    private static SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd_HHmmssSS", Locale.getDefault());
 
     static {
         WHITE_SET.add(MATCH_ALL);
@@ -123,12 +124,12 @@ public class FileUtils {
             }
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "readCSV: error: " + e.getMessage());
+            Log.e(TAG, "writeCSV: error: " + e.getMessage());
             return false;
         }
     }
 
-    public static Uri toUri(Context context,String filePath) {
+    public static Uri toUri(Context context, String filePath) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return FileProvider.getUriForFile(context, context.getApplicationInfo().packageName + ".fileprovider", new File(filePath));
         }
@@ -137,6 +138,7 @@ public class FileUtils {
 
     /**
      * Android 10 以上适配 另一种写法
+     *
      * @param context
      * @param uri
      * @return
@@ -164,8 +166,6 @@ public class FileUtils {
         return "";
     }
 
-    private static SimpleDateFormat sf = new SimpleDateFormat( "yyyyMMdd_HHmmssSS", Locale.getDefault());
-
     public static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
@@ -188,7 +188,7 @@ public class FileUtils {
         String[] projection = new String[]{"_data"};
 
         try {
-            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, (String)null);
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, (String) null);
             if (cursor != null && cursor.moveToFirst()) {
                 int column_index = cursor.getColumnIndexOrThrow("_data");
                 String var8 = cursor.getString(column_index);
@@ -225,7 +225,7 @@ public class FileUtils {
                 if (!TextUtils.isEmpty(id)) {
                     try {
                         Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-                        return getDataColumn(context, contentUri, (String)null, (String[])null);
+                        return getDataColumn(context, contentUri, (String) null, (String[]) null);
                     } catch (NumberFormatException var9) {
                         Log.i("FileUtils", var9.getMessage());
                         return null;
@@ -254,7 +254,7 @@ public class FileUtils {
                     return uri.getLastPathSegment();
                 }
 
-                return getDataColumn(context, uri, (String)null, (String[])null);
+                return getDataColumn(context, uri, (String) null, (String[]) null);
             }
 
             if ("file".equalsIgnoreCase(uri.getScheme())) {

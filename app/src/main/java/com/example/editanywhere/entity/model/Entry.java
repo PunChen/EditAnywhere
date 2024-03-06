@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Data
 @Log4j2
-@Entity(tableName = DBConst.ENTRY_DB_NAME, indices = {@Index(value = {"entryName", "version", "valid"}, unique = true)})
+@Entity(tableName = DBConst.ENTRY_DB_NAME, indices = {@Index(value = {"entryName", "version"}, unique = true)})
 @TypeConverters({DateConverter.class, ListConverter.class})
 public class Entry implements Serializable {
     /**
@@ -64,11 +64,6 @@ public class Entry implements Serializable {
     @ColumnInfo(name = "updateTime")
     private Long updateTime;
 
-    /**
-     * 是否有效
-     */
-    @ColumnInfo(name = "valid", defaultValue = "1")
-    private Boolean valid;
 
     /**
      * 词条内容列表
@@ -124,13 +119,6 @@ public class Entry implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public Boolean getValid() {
-        return valid;
-    }
-
-    public void setValid(Boolean valid) {
-        this.valid = valid;
-    }
 
     public List<String> getEntryContent() {
         return entryContent;
@@ -149,7 +137,6 @@ public class Entry implements Serializable {
                 ", version=" + version +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                ", valid=" + valid +
                 ", entryContent='" + entryContent + '\'' +
                 '}';
     }

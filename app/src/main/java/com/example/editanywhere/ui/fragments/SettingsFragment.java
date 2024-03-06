@@ -1,12 +1,14 @@
 package com.example.editanywhere.ui.fragments;
 
-import static com.alibaba.fastjson2.util.BeanUtils.arrayOf;
-
 import android.Manifest;
 import android.app.Application;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +17,8 @@ import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
@@ -40,32 +42,37 @@ public class SettingsFragment extends CustomFragment {
     private static final String TAG = "SettingsFragment";
     private FragmentSettingsBinding binding;
     private MainActivity fromActivity;
+    private final ActivityResultLauncher<String[]> filePermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(), result -> {
 
+                Log.i(TAG, "filePermissionLauncher: result:" + result);
+                boolean hasRight = result.values().stream().allMatch(right -> right);
+                if (!hasRight) {
+                    ToastUtil.toast(fromActivity, "no permission to access file");
+                }
+            });
+    private boolean hasFileAccess = false;
     // https://blog.csdn.net/hx7013/article/details/120916287
     private final ActivityResultLauncher<String> chooseFileLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(), result -> {
                 String filePath = FileUtils.getPath(fromActivity, result);
                 Log.i(TAG, "chooseFileLauncher: result:" + result + " filePath: " + filePath);
+                requestPermission();
                 doImportFromCsvFile(filePath);
             });
-
     private final ActivityResultLauncher<String> createFilerLauncher = registerForActivityResult(
             new ActivityResultContracts.CreateDocument(), result -> {
                 String filePath = FileUtils.getPath(fromActivity, result);
                 Log.i(TAG, "createFilerLauncher: result:" + result + " filePath: " + filePath);
-                doExportFromCsvFile(filePath);
-            } );
-
-    private final ActivityResultLauncher<String[]> filePermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-
-                Log.i(TAG, "filePermissionLauncher: result:" + result);
-                boolean hasRight =  result.values().stream().anyMatch(right -> !right);
-                if (!hasRight) {
-                    ToastUtil.toast(fromActivity,"no permission to export file");
+                String fileName;
+                if (filePath == null) {
+                    fileName = buildFileName();
+                } else {
+                    fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
                 }
-            } );
-
+                requestPermission();
+                doExportFromCsvFile(filePath, fileName);
+            });
 
 
     public SettingsFragment(MainActivity fromActivity) {
@@ -135,25 +142,43 @@ public class SettingsFragment extends CustomFragment {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
     private void requestPermission() {
         List<String> perms = new ArrayList<>();
-        perms.add(Manifest.permission.ACCESS_FINE_LOCATION);
         perms.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            perms.add(Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+        List<String> needPerms = new ArrayList<>();
+        for (String perm : perms) {
+            if (ContextCompat.checkSelfPermission(fromActivity, perm)
+                    != PackageManager.PERMISSION_GRANTED) {
+                needPerms.add(perm);
+            }
         }
-        filePermissionLauncher.launch(perms.toArray(new String[0]));
+        if (!needPerms.isEmpty()) {
+            ToastUtil.toast(fromActivity, "lack necessary permissions");
+            Log.e(TAG, "requestPermission: " + needPerms);
+            filePermissionLauncher.launch(needPerms.toArray(new String[0]));
+        } else {
+            hasFileAccess = true;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                // 方案一：跳转到系统文件访问页面，手动赋予
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.parse("package:" + fromActivity.getPackageName()));
+                startActivity(intent);
+            } else {
+                hasFileAccess = true;
+            }
+        }
     }
 
     private String buildFileName() {
-        String name = DateUtil.dateFormat(System.currentTimeMillis(),DateUtil.DATE_FORMAT_NUMBER);
+        String name = DateUtil.dateFormat(System.currentTimeMillis(), DateUtil.DATE_FORMAT_NUMBER);
         name += ".csv";
         return name;
     }
 
-    private void doExportFromCsvFile(String fullFilePath) {
+    private void doExportFromCsvFile(String fullFilePath, String fileName) {
 
         List<Entry> resultList = new ArrayList<>();
         EntryService.getInstance(fromActivity).queryAllByBatch(EntryUtil.EXPORT_BATCH_SIZE, new EntryServiceBatchQueryCallback() {
@@ -161,33 +186,38 @@ public class SettingsFragment extends CustomFragment {
             public void onStart(int totalCount) {
                 Log.i(TAG, "onStart: totalCount:" + totalCount);
             }
+
             @Override
             public void onProgress(int curCount, int totalCount, List<Entry> entryList) {
                 resultList.addAll(entryList);
-                String msg = String.format("onProgress: curCount:%s totalCount:%s",curCount, totalCount);
+                String msg = String.format("onProgress: curCount:%s totalCount:%s", curCount, totalCount);
                 Log.i(TAG, msg);
             }
+
             @Override
             public void onFinish(boolean success, String errMsg) {
-                Log.i(TAG, "onFinish: success:" + success +" errMsg:" + errMsg);
+                Log.i(TAG, "onFinish: success:" + success + " errMsg:" + errMsg);
                 if (success) {
-                    ToastUtil.toast(fromActivity, "start to write csv file:" + fullFilePath);
+                    ToastUtil.toast(fromActivity, "start to write csv file:" + fileName);
                     List<String[]> list = EntryUtil.toStringArrayList(resultList, true);
                     FileUtils.writeCSVFile(list, fullFilePath, ',');
-                    ToastUtil.toast(fromActivity, "finish to write csv file:" + fullFilePath);
+                    ToastUtil.toast(fromActivity, "finish to write csv file:" + fileName);
                 } else {
                     ToastUtil.toast(fromActivity, errMsg);
                 }
             }
         });
     }
+
     private void doImportFromCsvFile(String filePath) {
+        ToastUtil.toast(fromActivity, "import start");
         List<String[]> list = FileUtils.readCSVFile(filePath, ',');
         List<Entry> entryList = EntryUtil.fromStringArrayList(list, true);
         EntryService.getInstance(fromActivity).addByBatch(entryList, new EntryServiceCallback<List<Long>>() {
             @Override
             public void onSuccess(List<Long> result) {
                 Log.i(TAG, "doImportFromCsvFile onSuccess: " + result);
+                ToastUtil.toast(fromActivity, "import finish");
             }
 
             @Override
@@ -197,6 +227,12 @@ public class SettingsFragment extends CustomFragment {
         });
     }
 
+    //todo
+    /*
+
+android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: entry.entryName, entry.version, entry.valid (Sqlite code 2067 SQLITE_CONSTRAINT_UNIQUE), (OS error - 11:Try again)
+
+     */
     private void resetSettings() {
         String address = OKHttpUtil.server_address;
         binding.incEtLineServerAddress.etEditLineContent.setText(address);

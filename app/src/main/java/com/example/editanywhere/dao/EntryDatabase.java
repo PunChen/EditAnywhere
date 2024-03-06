@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.utils.DBConst;
 
-@Database(entities = Entry.class, version = 3, exportSchema = false)
+@Database(entities = Entry.class, version = 4, exportSchema = false)
 public abstract class EntryDatabase extends RoomDatabase {
     private static final String TAG = "EntryDatabase";
     private static final int MAX_MIGRATION = 20;
