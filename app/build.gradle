@@ -76,4 +76,7 @@ dependencies {
     annotationProcessor  "androidx.room:room-compiler:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
+    // https://mvnrepository.com/artifact/net.sourceforge.javacsv/javacsv
+    implementation group: 'net.sourceforge.javacsv', name: 'javacsv', version: '2.0'
+
 }

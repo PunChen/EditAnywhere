@@ -23,30 +23,31 @@ public class OKHttpUtil {
     public static final String server_address = "http://192.168.31.79:8080";
     private static final OkHttpClient client = new OkHttpClient();
     private static final String TAG = "OKHttpUtil";
+    private static Application application;
 
-
-    public static void init(Activity activity){
-        if(activity != null){
+    public static void init(Activity activity) {
+        if (activity != null) {
             application = activity.getApplication();
         }
     }
-    private static Application application;
-    public static String getUrl(){
+
+    public static String getUrl() {
         String res = server_address;
-        if(application != null){
-            res = SPUtil.getString(application,SPUtil.TAG_SERVER_ADDRESS,server_address);
+        if (application != null) {
+            res = SPUtil.getString(application, SPUtil.TAG_SERVER_ADDRESS, server_address);
         }
         return res;
     }
 
-    public static void resetUrl(){
-        if(application != null){
-           SPUtil.putString(application,SPUtil.TAG_SERVER_ADDRESS,server_address);
+    public static void resetUrl() {
+        if (application != null) {
+            SPUtil.putString(application, SPUtil.TAG_SERVER_ADDRESS, server_address);
         }
     }
 
     /**
      * todo 使用thrift 进行统一的接口规定
+     *
      * @param body
      * @param
      * @param
@@ -56,7 +57,7 @@ public class OKHttpUtil {
     public static void post(String api, Map<String, Object> body, OkHttpCallBack callBack) {
 
         new Thread(() -> {
-            try{
+            try {
                 RequestBody requestBody = RequestBody.create(JSON.toJSONString(body), MIME_JSON);
                 String url = getUrl() + api;
                 Request request = new Request.Builder()
@@ -64,41 +65,42 @@ public class OKHttpUtil {
                         .post(requestBody)
                         .build();
                 Response response = client.newCall(request).execute();
-                if(response.body() != null){
-                    String res =  response.body().string();
+                if (response.body() != null) {
+                    String res = response.body().string();
                     SimpleResponse simpleResponse = JSON.parseObject(res, SimpleResponse.class);
-                    if(simpleResponse != null){
-                        if (simpleResponse.getCode()==0){
+                    if (simpleResponse != null) {
+                        if (simpleResponse.getCode() == 0) {
                             callBack.onSuccess(simpleResponse.getData().toString());
-                        }else {
+                        } else {
                             callBack.onError(simpleResponse.getMsg());
                         }
                     }
-                }else {
+                } else {
                     callBack.onError(response.message());
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "post: error "+e.getMessage());
+                Log.e(TAG, "post: error " + e.getMessage());
                 callBack.onError(e.getMessage());
             }
         }).start();
 
     }
 
-    public static boolean isValidIpv4(String ip){
+    public static boolean isValidIpv4(String ip) {
         if ((ip != null) && (!ip.isEmpty())) {
             return Pattern.matches("^([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}$", ip);
         }
         return false;
     }
+
     public static boolean isValidPort(String port) {
         //端口号验证 1 ~ 65535
-        if(port != null){
+        if (port != null) {
             String regex = "^([1-9]|[1-9]\\d{1,3}|[1-6][0-5][0-5][0-3][0-5])$";
             return Pattern.matches(regex, port);
         }
-        return  false;
+        return false;
     }
 
 

@@ -11,12 +11,12 @@ public class MainTest implements IXposedHookLoadPackage, IXposedHookInitPackageR
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        Log.e("MainTest" ,"应用名称："+lpparam.packageName);
+        Log.e("MainTest", "应用名称：" + lpparam.packageName);
 
     }
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        Log.e("MainTest","加载的资源名称"+resparam.packageName+" "+resparam.res.toString());
+        Log.e("MainTest", "加载的资源名称" + resparam.packageName + " " + resparam.res.toString());
     }
 }

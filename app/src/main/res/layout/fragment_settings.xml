@@ -40,6 +40,12 @@
         <include
             android:id="@+id/inc_check_line_local_mode"
             layout="@layout/check_line" />
+
+        <include android:id="@+id/inc_button_line_import"
+            layout="@layout/button_line"/>
+
+        <include android:id="@+id/inc_button_line_export"
+            layout="@layout/button_line"/>
     </LinearLayout>
 
 

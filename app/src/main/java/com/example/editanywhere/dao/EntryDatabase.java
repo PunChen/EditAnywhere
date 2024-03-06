@@ -13,14 +13,16 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.utils.DBConst;
 
-@Database(entities = Entry.class, version = 3, exportSchema = false)
+@Database(entities = Entry.class, version = 4, exportSchema = false)
 public abstract class EntryDatabase extends RoomDatabase {
     private static final String TAG = "EntryDatabase";
     private static final int MAX_MIGRATION = 20;
     private static final Migration[] migrations = new Migration[MAX_MIGRATION];
+    private static volatile EntryDatabase sInstance;
+
     static {
         for (int i = 1; i <= MAX_MIGRATION; i++) {
-            migrations[i - 1] = new Migration(i , i + 1) {
+            migrations[i - 1] = new Migration(i, i + 1) {
                 @Override
                 public void migrate(@NonNull SupportSQLiteDatabase database) {
                     String msg = String.format("migrate %s ===> %s", this.startVersion, this.endVersion);
@@ -32,10 +34,6 @@ public abstract class EntryDatabase extends RoomDatabase {
         }
     }
 
-
-    public abstract EntryDao getEntryDao();
-
-    private static volatile EntryDatabase sInstance;
     public static EntryDatabase getInstance(Context context) {
         if (sInstance == null) {
             synchronized (EntryDatabase.class) {
@@ -52,4 +50,6 @@ public abstract class EntryDatabase extends RoomDatabase {
         }
         return sInstance;
     }
+
+    public abstract EntryDao getEntryDao();
 }

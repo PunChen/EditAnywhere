@@ -14,14 +14,15 @@ import java.util.Locale;
 public class DateConverter {
 
     private static final String TAG = "DateConverter";
+
     @TypeConverter
-    public static String convertDate(Date date){
+    public static String convertDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.DEFAULT_DATE_FORMAT, Locale.getDefault());
         return sdf.format(date);
     }
 
     @TypeConverter
-    public static Date revertDate(String dateStr){
+    public static Date revertDate(String dateStr) {
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.DEFAULT_DATE_FORMAT, Locale.getDefault());
         Date date;
         try {

@@ -17,8 +17,8 @@ import com.example.editanywhere.utils.ProjectInfoUtil;
 
 public class AboutFragment extends CustomFragment {
 
+    private final MainActivity fromActivity;
     private FragmentAboutBinding binding;
-    private MainActivity fromActivity;
 
     public AboutFragment(MainActivity fromActivity) {
         this.fromActivity = fromActivity;
