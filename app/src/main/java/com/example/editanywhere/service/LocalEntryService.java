@@ -139,7 +139,7 @@ public class LocalEntryService extends EntryService {
     @Override
     public void addByEntryNameAndContent(String entryName, List<String> entryContent, EntryServiceCallback<Entry> callback) {
         Long id = addByEntryNameAndContent(entryName, entryContent);
-        if (Objects.equals(id, EntryDao.INSERT_FAIL_RETURN_ID)) {
+        if (Objects.equals(id, EntryDao.INSERT_FAIL_RETURN_ID) || id == null) {
             callback.onFailure("addByEntryNameAndContent failed");
             return;
         }
