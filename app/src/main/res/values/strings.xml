@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">EditAnywhere</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -55,6 +55,7 @@
     <string name="check_line_content_local_mode">是否开启本地模式</string>
 
     <!--笔记本-->
+    <string name="book_all">全部</string>
     <string name="book_name">笔记本名称</string>
     <string name="book_desc">笔记本描述</string>
 </resources>

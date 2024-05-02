@@ -83,5 +83,7 @@ public abstract class EntryService {
 
     public abstract void addByEntryNameAndContent(String entryName, List<String> entryContent, EntryServiceCallback<Entry> callback);
 
+    // 根据笔记本id查询所属的所有词条
+    public abstract void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback);
 
 }

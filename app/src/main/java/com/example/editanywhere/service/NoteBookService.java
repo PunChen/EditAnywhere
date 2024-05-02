@@ -72,7 +72,6 @@ public final class NoteBookService {
                 result.setNotebookName(temp.getNotebookName());
                 result.setDescription(temp.getDescription());
                 result.setCreateTime(temp.getCreateTime());
-                result.setCanDelete(temp.getCanDelete());
             }
             return res;
         } catch (Exception e) {

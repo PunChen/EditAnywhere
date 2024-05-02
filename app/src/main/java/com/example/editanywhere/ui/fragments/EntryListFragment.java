@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
+import com.example.editanywhere.adapter.AdapterEventType;
+import com.example.editanywhere.adapter.BookViewAdapter;
 import com.example.editanywhere.adapter.EntryListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
 import com.example.editanywhere.databinding.FragmentEntryListBinding;
@@ -35,6 +37,7 @@ public class EntryListFragment extends CustomFragment {
     private final Activity activity;
     private FragmentEntryListBinding binding;
     private EntryListAdapter entryListAdapter;
+    private BookViewAdapter bookViewAdapter;
 
     public EntryListFragment(Activity activity) {
         this.activity = activity;
@@ -45,11 +48,40 @@ public class EntryListFragment extends CustomFragment {
 
         binding = FragmentEntryListBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        // 词条
         RecyclerView rcEntryList = binding.rcEntryList;
         RecyclerViewNoBugLinearLayoutManager layoutManager = new RecyclerViewNoBugLinearLayoutManager(activity);
         rcEntryList.setLayoutManager(layoutManager);
         entryListAdapter = new EntryListAdapter(activity);
         rcEntryList.setAdapter(entryListAdapter);
+        // 笔记本
+        RecyclerView rcBookList = binding.rcBookList;
+        RecyclerViewNoBugLinearLayoutManager bookLayoutManager =
+                new RecyclerViewNoBugLinearLayoutManager(
+                        activity, RecyclerViewNoBugLinearLayoutManager.HORIZONTAL, false);
+        rcBookList.setLayoutManager(bookLayoutManager);
+        bookViewAdapter = new BookViewAdapter(activity);
+        rcBookList.setAdapter(bookViewAdapter);
+
+        bookViewAdapter.setOtherAdapterListener(event -> {
+            if (event.getType() == AdapterEventType.EVENT_ITEM_CLICK) {
+                EntryService.getInstance(activity).queryAllByNotebookId(event.getArg1(), new EntryServiceCallback<>() {
+                    @Override
+                    public void onSuccess(List<Entry> result) {
+                        entryListAdapter.initList(result);
+                    }
+                    @Override
+                    public void onFailure(String errMsg) {
+                        ToastUtil.toast(activity, "queryAllByNotebookId fail, err: " + errMsg);
+                    }
+                });
+            } else if (event.getType() == AdapterEventType.EVENT_QUERY_ALL) {
+                entryListAdapter.refreshAll();
+            }
+        });
+
+
+//        bookViewAdapter.a
         //toolbar
         initToolbar();
 
@@ -116,6 +148,7 @@ public class EntryListFragment extends CustomFragment {
         super.onResume();
         Log.e(TAG, "onResume: refresh all entry list");
         entryListAdapter.refreshAll();
+        bookViewAdapter.refreshAll();
     }
 
     private void showAddEntryAlertDialog() {

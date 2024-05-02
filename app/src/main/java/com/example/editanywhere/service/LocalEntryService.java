@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.editanywhere.dao.EditAnywhereDatabase;
+import com.example.editanywhere.dao.EntryBookKeyDao;
 import com.example.editanywhere.dao.EntryDao;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.model.EntryBookKey;
 import com.example.editanywhere.utils.EntryServiceBatchQueryCallback;
 import com.example.editanywhere.utils.EntryServiceCallback;
 
@@ -20,11 +22,13 @@ public class LocalEntryService extends EntryService {
 
     private static final String TAG = "LocalEntryService";
     private final EntryDao entryDao;
+    private final EntryBookKeyDao entryBookKeyDao;
     private final EditAnywhereDatabase database;
 
     public LocalEntryService(Context context) {
         database = EditAnywhereDatabase.getInstance(context);
         entryDao = database.getEntryDao();
+        entryBookKeyDao = database.getEntryBookKeyDao();
     }
 
 
@@ -145,6 +149,19 @@ public class LocalEntryService extends EntryService {
         }
         Entry entry = entryDao.queryById(id);
         callback.onSuccess(entry);
+    }
+
+    @Override
+    public void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback) {
+        try {
+            List<EntryBookKey> list = entryBookKeyDao.queryEntryIdsByBookId(bookId);
+            List<Long> idList = list.stream().map(EntryBookKey::getEntryId).collect(Collectors.toList());
+            List<Entry> entryList = entryDao.queryAllByIds(idList);
+            callback.onSuccess(entryList);
+        } catch (Exception e) {
+            Log.e(TAG, "queryAllByNotebookId fail: " + e.getMessage());
+            callback.onFailure("queryAllByNotebookId failed");
+        }
     }
 
     private Long addByEntryNameAndContent(String entryName, List<String> entryContent) {

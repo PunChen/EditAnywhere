@@ -15,7 +15,7 @@ import com.example.editanywhere.entity.model.EntryBookKey;
 import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.utils.DBConst;
 
-@Database(entities = {Entry.class, Notebook.class, EntryBookKey.class}, version = 4, exportSchema = false)
+@Database(entities = {Entry.class, Notebook.class, EntryBookKey.class}, version = 1, exportSchema = false)
 public abstract class EditAnywhereDatabase extends RoomDatabase {
     private static final String TAG = "EditAnyWhere";
     private static final int MAX_MIGRATION = 20;

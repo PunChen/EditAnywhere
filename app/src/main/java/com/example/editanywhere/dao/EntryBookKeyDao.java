@@ -16,7 +16,7 @@ public interface EntryBookKeyDao {
     Long insert(EntryBookKey entryBookKey);
 
     @Query("select * from entry_book_key where id=:id limit 1")
-    Notebook queryById(Long id);
+    EntryBookKey queryById(Long id);
 
     @Query("select * from entry_book_key")
     List<EntryBookKey> queryAll();

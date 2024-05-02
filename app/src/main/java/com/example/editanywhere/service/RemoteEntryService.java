@@ -128,5 +128,10 @@ public class RemoteEntryService extends EntryService {
 
     }
 
+    @Override
+    public void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback) {
+
+    }
+
 
 }

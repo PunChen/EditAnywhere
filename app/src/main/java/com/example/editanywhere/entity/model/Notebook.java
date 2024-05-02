@@ -44,12 +44,6 @@ public class Notebook {
     @ColumnInfo(name = "createTime")
     private Long createTime;
 
-    /**
-     * 是否可删除
-     */
-    @ColumnInfo(name = "canDelete")
-    private Boolean canDelete;
-
     public Long getId() {
         return id;
     }
@@ -82,13 +76,6 @@ public class Notebook {
         this.createTime = createTime;
     }
 
-    public Boolean getCanDelete() {
-        return canDelete;
-    }
-
-    public void setCanDelete(Boolean canDelete) {
-        this.canDelete = canDelete;
-    }
 
     @Override
     public String toString() {
@@ -97,7 +84,6 @@ public class Notebook {
                 ", notebookName='" + notebookName + '\'' +
                 ", description='" + description + '\'' +
                 ", createTime=" + createTime +
-                ", canDelete=" + canDelete +
                 '}';
     }
 }
