@@ -9,6 +9,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_entry_list">词条列表</string>
+    <string name="menu_book_list">笔记本列表</string>
     <string name="menu_settings">设置</string>
     <string name="menu_about">关于</string>
 
@@ -52,4 +53,8 @@
     <string name="edit_line_edit_ensure">编辑框确认</string>
     <string name="check_line_content">检查框内容描述</string>
     <string name="check_line_content_local_mode">是否开启本地模式</string>
+
+    <!--笔记本-->
+    <string name="book_name">笔记本名称</string>
+    <string name="book_desc">笔记本描述</string>
 </resources>

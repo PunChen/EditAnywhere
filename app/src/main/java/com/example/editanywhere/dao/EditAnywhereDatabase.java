@@ -11,14 +11,16 @@ import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.model.EntryBookKey;
+import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.utils.DBConst;
 
-@Database(entities = Entry.class, version = 4, exportSchema = false)
-public abstract class EntryDatabase extends RoomDatabase {
-    private static final String TAG = "EntryDatabase";
+@Database(entities = {Entry.class, Notebook.class, EntryBookKey.class}, version = 4, exportSchema = false)
+public abstract class EditAnywhereDatabase extends RoomDatabase {
+    private static final String TAG = "EditAnyWhere";
     private static final int MAX_MIGRATION = 20;
     private static final Migration[] migrations = new Migration[MAX_MIGRATION];
-    private static volatile EntryDatabase sInstance;
+    private static volatile EditAnywhereDatabase sInstance;
 
     static {
         for (int i = 1; i <= MAX_MIGRATION; i++) {
@@ -27,19 +29,22 @@ public abstract class EntryDatabase extends RoomDatabase {
                 public void migrate(@NonNull SupportSQLiteDatabase database) {
                     String msg = String.format("migrate %s ===> %s", this.startVersion, this.endVersion);
                     Log.i(TAG, msg);
-                    String sql = "DROP TABLE " + DBConst.ENTRY_DB_NAME;
-                    database.execSQL(sql);
+                    for (String tab : DBConst.TAB_SET) {
+                        Log.w(TAG, "start dropping table: " + tab);
+                        String sql = "DROP TABLE " + tab;
+                        database.execSQL(sql);
+                    }
                 }
             };
         }
     }
 
-    public static EntryDatabase getInstance(Context context) {
+    public static EditAnywhereDatabase getInstance(Context context) {
         if (sInstance == null) {
-            synchronized (EntryDatabase.class) {
+            synchronized (EditAnywhereDatabase.class) {
                 if (sInstance == null) {
                     sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                                    EntryDatabase.class, DBConst.ENTRY_DB_NAME)
+                                    EditAnywhereDatabase.class, DBConst.DB_NAME)
                             .allowMainThreadQueries()
                             .addMigrations(migrations)
                             //.addCallback(CALLBACK)
@@ -52,4 +57,9 @@ public abstract class EntryDatabase extends RoomDatabase {
     }
 
     public abstract EntryDao getEntryDao();
+
+    public abstract NotebookDao getNotebookDao();
+
+    public abstract EntryBookKeyDao getEntryBookKeyDao();
+
 }

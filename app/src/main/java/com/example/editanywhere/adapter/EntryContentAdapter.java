@@ -1,6 +1,5 @@
 package com.example.editanywhere.adapter;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -29,8 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EntryContentAdapter extends RecyclerView.Adapter<EntryContentAdapter.ViewHolder> {
-
+public class EntryContentAdapter extends BaseAdapter<String, EntryContentAdapter.ViewHolder> {
 
     private static final int MSG_ID_UPDATE_LIST = 1;
     private static final int MSG_ID_TOAST = 2;
@@ -39,7 +37,6 @@ public class EntryContentAdapter extends RecyclerView.Adapter<EntryContentAdapte
     private static final int MSG_ID_ITEM_EDIT = 5;
     private static final String MSG_KEY_TOAST_MSG = "TOAST_MSG";
     private final Activity activity;
-    private List<String> entryContentList = new ArrayList<>();
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -98,7 +95,7 @@ public class EntryContentAdapter extends RecyclerView.Adapter<EntryContentAdapte
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        String entryContentItem = entryContentList.get(position);
+        String entryContentItem = list.get(position);
         viewHolder.tv_entry_content_item.setText(entryContentItem);
         viewHolder.itemView.setOnLongClickListener(v -> {
             showPopUpMenu(v, position);
@@ -113,7 +110,7 @@ public class EntryContentAdapter extends RecyclerView.Adapter<EntryContentAdapte
             int id = item.getItemId();
             if (id == R.id.menu_entry_content_edit) {
                 //dialog
-                showEditEntryContentAlertDialog(itemPos, entryContentList.get(itemPos));
+                showEditEntryContentAlertDialog(itemPos, list.get(itemPos));
             } else if (id == R.id.menu_entry_content_delete) {
                 postDeleteEntryContent(itemPos);
             }
@@ -197,44 +194,6 @@ public class EntryContentAdapter extends RecyclerView.Adapter<EntryContentAdapte
                 });
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return entryContentList.size();
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    private void onDataSetChanged(List<String> entryContentList) {
-        if (entryContentList != null) {
-            this.entryContentList = entryContentList;
-            this.notifyDataSetChanged();
-        }
-    }
-
-    public void onDataSetDeleteOne(int position) {
-        if (entryContentList != null && position >= 0 && position < entryContentList.size()) {
-            entryContentList.remove(position);
-            notifyItemRemoved(position);
-            //刷新下标，不然下标就重复
-            notifyItemRangeChanged(position, getItemCount() - position);
-        }
-    }
-
-    public void onDataSetInsertOne(int position, String insertText) {
-        if (entryContentList != null && position >= 0 && position <= entryContentList.size()) {
-            entryContentList.add(position, insertText);
-            notifyItemInserted(position);
-            //刷新下标，不然下标就不连续
-            notifyItemRangeChanged(position, getItemCount() - position);
-        }
-    }
-
-    public void onDataSetEditOne(int position, String destText) {
-        if (entryContentList != null && position >= 0 && position < entryContentList.size()) {
-            entryContentList.set(position, destText);
-            notifyItemChanged(position);
-        }
-    }
 
     public void initList(Entry entry) {
         if (entry == null) return;
@@ -263,7 +222,7 @@ public class EntryContentAdapter extends RecyclerView.Adapter<EntryContentAdapte
     }
 
     public List<String> getEntryContentList() {
-        return entryContentList;
+        return list;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

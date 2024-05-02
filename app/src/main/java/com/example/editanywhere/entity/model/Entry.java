@@ -6,6 +6,8 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.example.editanywhere.entity.converter.DateConverter;
+import com.example.editanywhere.entity.converter.ListConverter;
 import com.example.editanywhere.utils.DBConst;
 
 import java.io.Serializable;
@@ -23,7 +25,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Data
 @Log4j2
-@Entity(tableName = DBConst.ENTRY_DB_NAME, indices = {@Index(value = {"entryName", "version"}, unique = true)})
+@Entity(tableName = DBConst.TAB_NAME_ENTRY, indices = {@Index(value = {"entryName", "version"}, unique = true)})
 @TypeConverters({DateConverter.class, ListConverter.class})
 public class Entry implements Serializable {
     /**

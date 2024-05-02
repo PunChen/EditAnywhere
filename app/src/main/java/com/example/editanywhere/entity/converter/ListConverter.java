@@ -1,4 +1,4 @@
-package com.example.editanywhere.entity.model;
+package com.example.editanywhere.entity.converter;
 
 import androidx.room.TypeConverter;
 

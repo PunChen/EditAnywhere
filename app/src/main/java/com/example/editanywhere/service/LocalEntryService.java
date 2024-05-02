@@ -3,8 +3,8 @@ package com.example.editanywhere.service;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.editanywhere.dao.EditAnywhereDatabase;
 import com.example.editanywhere.dao.EntryDao;
-import com.example.editanywhere.dao.EntryDatabase;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.utils.EntryServiceBatchQueryCallback;
 import com.example.editanywhere.utils.EntryServiceCallback;
@@ -20,11 +20,11 @@ public class LocalEntryService extends EntryService {
 
     private static final String TAG = "LocalEntryService";
     private final EntryDao entryDao;
-    private final EntryDatabase entryDatabase;
+    private final EditAnywhereDatabase database;
 
     public LocalEntryService(Context context) {
-        entryDatabase = EntryDatabase.getInstance(context);
-        entryDao = entryDatabase.getEntryDao();
+        database = EditAnywhereDatabase.getInstance(context);
+        entryDao = database.getEntryDao();
     }
 
 

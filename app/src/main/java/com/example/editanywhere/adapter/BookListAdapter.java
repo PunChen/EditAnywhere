@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -18,20 +17,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.editanywhere.EntryInfoActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.entity.model.Entry;
-import com.example.editanywhere.service.EntryService;
-import com.example.editanywhere.utils.EntryServiceCallback;
+import com.example.editanywhere.entity.model.Notebook;
+import com.example.editanywhere.service.NoteBookService;
 import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.List;
 
 
-public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHolder> {
+public class BookListAdapter extends BaseAdapter<Notebook, BookListAdapter.ViewHolder> {
 
 
-    private static final String TAG = "EntryListAdapter";
+    private static final String TAG = "BookListAdapter";
     private static final int MSG_ID_UPDATE_LIST = 1;
     private static final int MSG_ID_TOAST = 2;
     private static final int MSG_ID_ITEM_DELETE = 3;
@@ -46,13 +44,13 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_ID_UPDATE_LIST:
-                    List<Entry> entryList = (List<Entry>) msg.obj;
-                    onDataSetChanged(entryList);
+                    List<Notebook> notebooks = (List<Notebook>) msg.obj;
+                    onDataSetChanged(notebooks);
                     break;
                 case MSG_ID_ITEM_INSERT:
-                    Entry entry = (Entry) msg.obj;
+                    Notebook notebook = (Notebook) msg.obj;
                     int pos = msg.arg1;
-                    onDataSetInsertOne(pos, entry);
+                    onDataSetInsertOne(pos, notebook);
                     break;
                 case MSG_ID_ITEM_DELETE:
                     pos = msg.arg1;
@@ -62,47 +60,34 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
         }
     };
 
-    public EntryListAdapter(Activity activity) {
+
+    public BookListAdapter(Activity activity) {
+        super();
         this.activity = activity;
         this.context = activity;
         refreshAll();
     }
 
     public void refreshAll() {
-        EntryService.getInstance(activity).queryAll(new EntryServiceCallback<List<Entry>>() {
-            @Override
-            public void onSuccess(List<Entry> result) {
-                initList(result);
-            }
-
-            @Override
-            public void onFailure(String errMsg) {
-                ToastUtil.toast(activity, errMsg);
-            }
-
-        });
+        List<Notebook> notebookList = NoteBookService.getInstance(activity).getAllNotebooks();
+        initList(notebookList);
     }
 
-    public List<Entry> getEntryList() {
-        return list;
+    public void onDataSetInsertOneSync(int position, Notebook notebook) {
+        Message message = new Message();
+        message.what = MSG_ID_ITEM_INSERT;
+        message.arg1 = position;
+        message.obj = notebook;
+        handler.sendMessage(message);
     }
 
-    private String getTag() {
-        return this.getClass().getSimpleName();
-    }
-
-    public void tryAddEntry(String entryName) {
-        EntryService.getInstance(activity).addByEntryName(entryName, new EntryServiceCallback<Entry>() {
-            @Override
-            public void onSuccess(Entry result) {
-                onDataSetInsertOneSync(0, result);
-            }
-
-            @Override
-            public void onFailure(String errMsg) {
-                ToastUtil.toast(activity, errMsg);
-            }
-        });
+    public void tryAddEntry(String bookName) {
+        Notebook notebook = new Notebook();
+        if (NoteBookService.getInstance(activity).addOneNotebook(bookName, bookName, notebook)) {
+            onDataSetInsertOneSync(0, notebook);
+        } else {
+            ToastUtil.toast(context, "tryAddEntry addOneNotebook fail");
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -111,7 +96,7 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view, which defines the UI of the list item
         View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.entry_item, viewGroup, false);
+                .inflate(R.layout.book_item, viewGroup, false);
         return new ViewHolder(view);
     }
 
@@ -121,10 +106,10 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        Entry entry = list.get(position);
-        viewHolder.tv_entry_name.setText(entry.getEntryName());
-        viewHolder.tv_entry_version.setText(String.format("v%s", entry.getVersion()));
-        viewHolder.iv_entry_delete.setOnClickListener(new View.OnClickListener() {
+        Notebook notebook = list.get(position);
+        viewHolder.tv_book_name.setText(notebook.getNotebookName());
+        viewHolder.tv_book_desc.setText(notebook.getDescription());
+        viewHolder.iv_book_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -137,7 +122,7 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
                     //确定按钮的点击事件
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        postDeleteEntry(entry, viewHolder.getBindingAdapterPosition());
+                        postDeleteEntry(notebook, viewHolder.getBindingAdapterPosition());
                         dialog.dismiss();
                     }
                 });
@@ -154,57 +139,41 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, EntryInfoActivity.class);
-                intent.putExtra(Entry.class.getSimpleName(), entry.getEntryName());
-                context.startActivity(intent);
+                ToastUtil.toast(context, "clicked " + notebook.getNotebookName());
             }
         });
     }
 
-    public void onDataSetInsertOneSync(int position, Entry addEntry) {
-        Message message = new Message();
-        message.what = MSG_ID_ITEM_INSERT;
-        message.arg1 = position;
-        message.obj = addEntry;
-        handler.sendMessage(message);
-    }
-
-    public void initList(List<Entry> entries) {
+    public void initList(List<Notebook> entries) {
         Message message = new Message();
         message.obj = entries;
         message.what = MSG_ID_UPDATE_LIST;
         handler.sendMessage(message);
     }
 
-    private void postDeleteEntry(Entry entry, int pos) {
-        Log.e("TAG", "postDeleteEntry: " + entry.toString());
-        EntryService.getInstance(activity).deleteByEntryName(entry.getEntryName(), new EntryServiceCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                Message message = new Message();
-                message.what = MSG_ID_ITEM_DELETE;
-                message.arg1 = pos;
-                handler.sendMessage(message);
-            }
-
-            @Override
-            public void onFailure(String errMsg) {
-                ToastUtil.toast(activity, errMsg);
-            }
-        });
+    private void postDeleteEntry(Notebook notebook, int pos) {
+        Log.e("TAG", "postDeleteEntry: " + notebook.toString());
+        if (NoteBookService.getInstance(activity).deleteOneNotebook(notebook.getId())) {
+            Message message = new Message();
+            message.what = MSG_ID_ITEM_DELETE;
+            message.arg1 = pos;
+            handler.sendMessage(message);
+        } else {
+            ToastUtil.toast(activity, "delete notebook fail");
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView tv_entry_name;
-        private final TextView tv_entry_version;
-        private final ImageButton iv_entry_delete;
+        private final TextView tv_book_name;
+        private final TextView tv_book_desc;
+        private final ImageButton iv_book_delete;
 
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
-            tv_entry_name = view.findViewById(R.id.tv_entry_name);
-            tv_entry_version = view.findViewById(R.id.tv_entry_version);
-            iv_entry_delete = view.findViewById(R.id.iv_entry_delete);
+            tv_book_name = view.findViewById(R.id.tv_book_name);
+            tv_book_desc = view.findViewById(R.id.tv_book_desc);
+            iv_book_delete = view.findViewById(R.id.iv_book_delete);
         }
 
     }
