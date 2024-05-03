@@ -70,7 +70,7 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
     }
 
     public void refreshAll(NotebookView notebookView) {
-        if (notebookView.isAll()) {
+        if (notebookView == null || notebookView.isAll()) {
             EntryService.getInstance(activity).queryAll(new EntryServiceCallback<>() {
                 @Override
                 public void onSuccess(List<Entry> result) {
@@ -97,10 +97,6 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
 
     public List<Entry> getEntryList() {
         return list;
-    }
-
-    private String getTag() {
-        return this.getClass().getSimpleName();
     }
 
     public void tryAddEntry(NotebookView notebookView, String entryName) {

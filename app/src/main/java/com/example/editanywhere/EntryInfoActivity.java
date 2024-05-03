@@ -31,6 +31,7 @@ public class EntryInfoActivity extends AppCompatActivity {
     private static final int MSG_ID_UPDATE_LIST = 1;
     private static final int MSG_ID_TOAST = 2;
     private static final String MSG_KEY_TOAST_MSG = "TOAST_MSG";
+    private static final String TAG = "EntryInfoActivity";
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -83,7 +84,11 @@ public class EntryInfoActivity extends AppCompatActivity {
     private void initEntry() {
         Intent intent = getIntent();
 
-        Long id = intent.getLongExtra(Entry.class.getSimpleName(), 0L);
+        long id = intent.getLongExtra(Entry.class.getSimpleName(), -1L);
+        if (id == -1L) {
+            ToastUtil.toast(EntryInfoActivity.this, "initEntry fail");
+            return;
+        }
         EntryService.getInstance(EntryInfoActivity.this).queryByEntryId(id, new EntryServiceCallback<Entry>() {
             @Override
             public void onSuccess(Entry result) {
