@@ -59,4 +59,8 @@ public class AboutFragment extends CustomFragment {
     }
 
 
+    @Override
+    public void onSwitch() {
+        initView();
+    }
 }

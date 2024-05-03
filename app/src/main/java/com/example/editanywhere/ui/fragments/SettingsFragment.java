@@ -227,12 +227,7 @@ public class SettingsFragment extends CustomFragment {
         });
     }
 
-    //todo
-    /*
 
-android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: entry.entryName, entry.version, entry.valid (Sqlite code 2067 SQLITE_CONSTRAINT_UNIQUE), (OS error - 11:Try again)
-
-     */
     private void resetSettings() {
         String address = OKHttpUtil.server_address;
         binding.incEtLineServerAddress.etEditLineContent.setText(address);
@@ -252,4 +247,8 @@ android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: ent
     }
 
 
+    @Override
+    public void onSwitch() {
+
+    }
 }

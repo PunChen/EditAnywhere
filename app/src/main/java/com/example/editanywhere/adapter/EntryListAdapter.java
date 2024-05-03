@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.editanywhere.EntryInfoActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.view.NotebookView;
 import com.example.editanywhere.service.EntryService;
+import com.example.editanywhere.service.NoteBookService;
 import com.example.editanywhere.utils.EntryServiceCallback;
 import com.example.editanywhere.utils.ToastUtil;
 
@@ -65,22 +67,32 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
     public EntryListAdapter(Activity activity) {
         this.activity = activity;
         this.context = activity;
-        refreshAll();
     }
 
-    public void refreshAll() {
-        EntryService.getInstance(activity).queryAll(new EntryServiceCallback<List<Entry>>() {
-            @Override
-            public void onSuccess(List<Entry> result) {
-                initList(result);
-            }
-
-            @Override
-            public void onFailure(String errMsg) {
-                ToastUtil.toast(activity, errMsg);
-            }
-
-        });
+    public void refreshAll(NotebookView notebookView) {
+        if (notebookView.isAll()) {
+            EntryService.getInstance(activity).queryAll(new EntryServiceCallback<>() {
+                @Override
+                public void onSuccess(List<Entry> result) {
+                    initList(result);
+                }
+                @Override
+                public void onFailure(String errMsg) {
+                    ToastUtil.toast(activity, "queryAll fail, err: " + errMsg);
+                }
+            });
+        } else {
+            EntryService.getInstance(activity).queryAllByNotebookId(notebookView.getId(), new EntryServiceCallback<>() {
+                @Override
+                public void onSuccess(List<Entry> result) {
+                    initList(result);
+                }
+                @Override
+                public void onFailure(String errMsg) {
+                    ToastUtil.toast(activity, "queryAllByNotebookId fail, err: " + errMsg);
+                }
+            });
+        }
     }
 
     public List<Entry> getEntryList() {
@@ -91,11 +103,12 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
         return this.getClass().getSimpleName();
     }
 
-    public void tryAddEntry(String entryName) {
+    public void tryAddEntry(NotebookView notebookView, String entryName) {
         EntryService.getInstance(activity).addByEntryName(entryName, new EntryServiceCallback<Entry>() {
             @Override
             public void onSuccess(Entry result) {
                 onDataSetInsertOneSync(0, result);
+                addEntryToNotebook(result, notebookView);
             }
 
             @Override
@@ -103,6 +116,17 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
                 ToastUtil.toast(activity, errMsg);
             }
         });
+    }
+
+    private void addEntryToNotebook(Entry entry, NotebookView notebookView) {
+        if (notebookView.isAll()) { // 全部会默认加载所有，无需添加到笔记本中
+            return;
+        }
+        if(NoteBookService.getInstance(activity).addEntryToNotebook(notebookView.getId(), entry.getId())) {
+            refreshAll(notebookView);
+        } else {
+            ToastUtil.toast(context, "addEntryToNotebook fail");
+        }
     }
 
     // Create new views (invoked by the layout manager)

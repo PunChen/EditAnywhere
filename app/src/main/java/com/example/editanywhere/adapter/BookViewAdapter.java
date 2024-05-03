@@ -45,6 +45,12 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
             if (msg.what == MSG_ID_UPDATE_LIST) {
                 List<NotebookView> notebooks = (List<NotebookView>) msg.obj;
                 onDataSetChanged(notebooks);
+                // 全量加载笔记本完成后触发词条刷新机制
+                if (otherAdapterListener != null) {
+                    AdapterEvent event = new AdapterEvent();
+                    event.setType(AdapterEventType.EVENT_REFRESH_ENTRY_LIST);
+                    otherAdapterListener.onEvent(event);
+                }
             }
         }
     };
@@ -53,12 +59,19 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
     public void setOtherAdapterListener(AdapterEventListener otherAdapterListener) {
         this.otherAdapterListener = otherAdapterListener;
     }
+    public NotebookView getSelectedNotebook() {
+        for (NotebookView view : list) {
+            if (view.getSelected()) {
+                return view;
+            }
+        }
+        return null;
+    }
 
     public BookViewAdapter(Activity activity) {
         super();
         this.activity = activity;
         this.context = activity;
-        refreshAll();
     }
 
     public void refreshAll() {
@@ -104,12 +117,10 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
                 changeSelected(pos);
                 if (otherAdapterListener != null) {
                     AdapterEvent event = new AdapterEvent();
-                    if (notebook.isAll()) {
-                        event.setType(AdapterEventType.EVENT_QUERY_ALL);
-                    } else {
-                        event.setType(AdapterEventType.EVENT_ITEM_CLICK);
+                    if (!notebook.isAll()) {
                         event.setArg1(notebook.getId());
                     }
+                    event.setType(AdapterEventType.EVENT_REFRESH_ENTRY_LIST);
                     otherAdapterListener.onEvent(event);
                 }
             }
@@ -130,7 +141,6 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
         message.what = MSG_ID_UPDATE_LIST;
         handler.sendMessage(message);
     }
-
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_inner;

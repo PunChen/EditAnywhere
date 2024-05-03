@@ -21,6 +21,9 @@ public interface EntryBookKeyDao {
     @Query("select * from entry_book_key")
     List<EntryBookKey> queryAll();
 
+    @Query("select * from entry_book_key where bookId =:bookId and  entryId =:entryId limit 1")
+    EntryBookKey queryByEntryIdAndBookId(Long entryId, Long bookId);
+
     @Query("select * from entry_book_key where bookId =:bookId")
     List<EntryBookKey> queryEntryIdsByBookId(Long bookId);
 

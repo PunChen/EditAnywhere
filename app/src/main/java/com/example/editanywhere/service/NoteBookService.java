@@ -6,7 +6,10 @@ import android.util.Log;
 
 import com.example.editanywhere.dao.EditAnywhereDatabase;
 import com.example.editanywhere.dao.EntryBookKeyDao;
+import com.example.editanywhere.dao.EntryDao;
 import com.example.editanywhere.dao.NotebookDao;
+import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.model.EntryBookKey;
 import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.utils.SPUtil;
 import com.example.editanywhere.utils.StringUtils;
@@ -14,7 +17,6 @@ import com.example.editanywhere.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 public final class NoteBookService {
 
@@ -22,6 +24,7 @@ public final class NoteBookService {
     private final EditAnywhereDatabase database;
     private final NotebookDao notebookDao;
     private final EntryBookKeyDao entryBookKeyDao;
+    private final EntryDao entryDao;
 
     private static volatile NoteBookService instance;
 
@@ -33,6 +36,7 @@ public final class NoteBookService {
                 }
             }
         }
+        // todo notebook to server service
         boolean local = SPUtil.getBoolean(activity.getApplication(), SPUtil.TAG_WORKING_MODE_LOCAL, true);
         return instance;
     }
@@ -42,13 +46,14 @@ public final class NoteBookService {
         database = EditAnywhereDatabase.getInstance(context);
         notebookDao = database.getNotebookDao();
         entryBookKeyDao = database.getEntryBookKeyDao();
+        entryDao = database.getEntryDao();
     }
 
     public List<Notebook> getAllNotebooks() {
         try {
-           return notebookDao.queryAll();
+            return notebookDao.queryAll();
         } catch (Exception e) {
-            Log.e(TAG,"getAllNotebooks error , msg: " + e.getMessage());
+            Log.e(TAG, "getAllNotebooks error , msg: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -75,7 +80,7 @@ public final class NoteBookService {
             }
             return res;
         } catch (Exception e) {
-            Log.e(TAG,"addOneNotebook error , msg: " + e.getMessage());
+            Log.e(TAG, "addOneNotebook error , msg: " + e.getMessage());
             return false;
         }
     }
@@ -86,7 +91,7 @@ public final class NoteBookService {
             Notebook notebook = notebookDao.queryById(id);
             return notebook == null;
         } catch (Exception e) {
-            Log.e(TAG,"deleteOneNotebook error , msg: " + e.getMessage());
+            Log.e(TAG, "deleteOneNotebook error , msg: " + e.getMessage());
             return false;
         }
     }
@@ -100,9 +105,33 @@ public final class NoteBookService {
             notebookDao.updateNotebook(notebook);
             return true;
         } catch (Exception e) {
-            Log.e(TAG,"updateOneNotebook error , msg: " + e.getMessage());
+            Log.e(TAG, "updateOneNotebook error , msg: " + e.getMessage());
             return false;
         }
     }
 
+    public Boolean addEntryToNotebook(Long bookId, Long entryId) {
+        try {
+            Notebook notebook = notebookDao.queryById(bookId);
+            Entry entry = entryDao.queryById(entryId);
+            if (notebook == null || entry == null) {
+                Log.w(TAG, "addEntryToNotebook fail notebook: " + notebook + " entry: " + entry);
+                return false;
+            }
+            EntryBookKey entryBookKey  = entryBookKeyDao.queryByEntryIdAndBookId(entryId, bookId);
+            if (entryBookKey != null) {
+                Log.w(TAG, "addEntryToNotebook fail key pair already exists: pair: " +entry +"-"+ bookId);
+                return false;
+            }
+            EntryBookKey toAdd = new EntryBookKey();
+            toAdd.setBookId(bookId);
+            toAdd.setEntryId(entryId);
+            toAdd.setId(null);
+            Long id  = entryBookKeyDao.insert(toAdd);
+            return id != null;
+        } catch (Exception e) {
+            Log.e(TAG, "addEntryToNotebook error , msg: " + e.getMessage());
+            return false;
+        }
+    }
 }

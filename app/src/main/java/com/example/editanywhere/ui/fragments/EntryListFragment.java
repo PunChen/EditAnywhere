@@ -23,6 +23,7 @@ import com.example.editanywhere.adapter.EntryListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
 import com.example.editanywhere.databinding.FragmentEntryListBinding;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.view.NotebookView;
 import com.example.editanywhere.service.EntryService;
 import com.example.editanywhere.utils.EntryServiceCallback;
 import com.example.editanywhere.utils.ToastUtil;
@@ -64,24 +65,12 @@ public class EntryListFragment extends CustomFragment {
         rcBookList.setAdapter(bookViewAdapter);
 
         bookViewAdapter.setOtherAdapterListener(event -> {
-            if (event.getType() == AdapterEventType.EVENT_ITEM_CLICK) {
-                EntryService.getInstance(activity).queryAllByNotebookId(event.getArg1(), new EntryServiceCallback<>() {
-                    @Override
-                    public void onSuccess(List<Entry> result) {
-                        entryListAdapter.initList(result);
-                    }
-                    @Override
-                    public void onFailure(String errMsg) {
-                        ToastUtil.toast(activity, "queryAllByNotebookId fail, err: " + errMsg);
-                    }
-                });
-            } else if (event.getType() == AdapterEventType.EVENT_QUERY_ALL) {
-                entryListAdapter.refreshAll();
+            if (event.getType() == AdapterEventType.EVENT_REFRESH_ENTRY_LIST) {
+                entryListAdapter.refreshAll(bookViewAdapter.getSelectedNotebook());
             }
         });
-
-
-//        bookViewAdapter.a
+        // 加载笔记本列表
+        bookViewAdapter.refreshAll();
         //toolbar
         initToolbar();
 
@@ -122,7 +111,6 @@ public class EntryListFragment extends CustomFragment {
                             ToastUtil.toast(activity, errMsg);
                         }
 
-
                     });
                 } else {
                     EntryService.getInstance(activity).queryByEntryName(newText, new EntryServiceCallback<Entry>() {
@@ -143,13 +131,6 @@ public class EntryListFragment extends CustomFragment {
 
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.e(TAG, "onResume: refresh all entry list");
-        entryListAdapter.refreshAll();
-        bookViewAdapter.refreshAll();
-    }
 
     private void showAddEntryAlertDialog() {
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
@@ -160,10 +141,11 @@ public class EntryListFragment extends CustomFragment {
         dialog.setView(editText);
         dialog.setCancelable(true);//设置对话框是否可以取消
         //确定按钮的点击事件
+        NotebookView notebookView = bookViewAdapter.getSelectedNotebook();
         dialog.setPositiveButton("确认", (dialog12, which) -> {
             String text = editText.getText().toString();
             if (!"".equals(text)) {
-                entryListAdapter.tryAddEntry(text);
+                entryListAdapter.tryAddEntry(notebookView, text);
             } else {
                 Toast.makeText(activity, "input can not be empty!", Toast.LENGTH_SHORT).show();
             }
@@ -190,5 +172,13 @@ public class EntryListFragment extends CustomFragment {
         }
     }
 
-
+    @Override
+    public void onSwitch() {
+        if (bookViewAdapter != null) {
+            bookViewAdapter.refreshAll();
+            if (entryListAdapter != null) {
+                entryListAdapter.refreshAll(bookViewAdapter.getSelectedNotebook());
+            }
+        }
+    }
 }

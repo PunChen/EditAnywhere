@@ -96,13 +96,6 @@ public class MainActivity extends AppCompatActivity {
         switchFragment(entryListFragment);
     }
 
-    public void makeToast(String msg) {
-        Message message = new Message();
-        message.what = MSG_ID_TOAST;
-        message.getData().putString(MSG_KEY_TOAST_MSG, msg);
-        handler.sendMessage(message);
-    }
-
     //统一的fragment切换
     public void switchFragment(final CustomFragment targetFragment) {
         FragmentManager manager = getSupportFragmentManager();
@@ -110,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             manager.beginTransaction().hide(fragment).commitNow();
         }
         manager.beginTransaction().show(targetFragment).commit();
+        targetFragment.onSwitch();
     }
 
     public void openDrawer() {

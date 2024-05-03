@@ -114,4 +114,10 @@ public class BookListFragment extends CustomFragment {
     }
 
 
+    @Override
+    public void onSwitch() {
+        if (bookListAdapter != null) {
+            bookListAdapter.refreshAll();
+        }
+    }
 }
