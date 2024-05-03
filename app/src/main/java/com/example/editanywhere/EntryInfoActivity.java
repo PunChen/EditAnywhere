@@ -71,7 +71,6 @@ public class EntryInfoActivity extends AppCompatActivity {
     private void initViewByEntry(Entry entry) {
         this.entry = entry;
         binding.tvEntryName.setText(entry.getEntryName());
-        binding.tvEntryVersion.setText("v" + entry.getVersion());
         binding.tvCreateTime.setText(DateUtil.dateFormat(entry.getCreateTime(), DateUtil.DEFAULT_DATE_FORMAT));
         binding.tvUpdateTime.setText(DateUtil.dateFormat(entry.getUpdateTime(), DateUtil.DEFAULT_DATE_FORMAT));
         entryContentAdapter = new EntryContentAdapter(this);
@@ -84,8 +83,8 @@ public class EntryInfoActivity extends AppCompatActivity {
     private void initEntry() {
         Intent intent = getIntent();
 
-        String entryName = intent.getStringExtra(Entry.class.getSimpleName());
-        EntryService.getInstance(EntryInfoActivity.this).queryByEntryName(entryName, new EntryServiceCallback<Entry>() {
+        Long id = intent.getLongExtra(Entry.class.getSimpleName(), 0L);
+        EntryService.getInstance(EntryInfoActivity.this).queryByEntryId(id, new EntryServiceCallback<Entry>() {
             @Override
             public void onSuccess(Entry result) {
                 initViewByEntry(result);
@@ -141,8 +140,8 @@ public class EntryInfoActivity extends AppCompatActivity {
     private void postAddEntryContent(String addText) {
         List<String> newEntryContentList = new ArrayList<>(entryContentAdapter.getEntryContentList());
         newEntryContentList.add(0, addText);
-        EntryService.getInstance(EntryInfoActivity.this).editEntryContentByEntryName(
-                entry.getEntryName(), newEntryContentList, new EntryServiceCallback<Entry>() {
+        EntryService.getInstance(EntryInfoActivity.this).editEntryContentByEntryId(entry.getId(),
+                newEntryContentList, new EntryServiceCallback<Entry>() {
                     @Override
                     public void onSuccess(Entry result) {
                         syncAdapterData(addText);

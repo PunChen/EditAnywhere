@@ -25,7 +25,7 @@ import lombok.extern.log4j.Log4j2;
  */
 @Data
 @Log4j2
-@Entity(tableName = DBConst.TAB_NAME_ENTRY, indices = {@Index(value = {"entryName", "version"}, unique = true)})
+@Entity(tableName = DBConst.TAB_NAME_ENTRY, indices = {@Index(value = {"entryName"}, unique = true)})
 @TypeConverters({DateConverter.class, ListConverter.class})
 public class Entry implements Serializable {
     /**
@@ -47,12 +47,6 @@ public class Entry implements Serializable {
     @ColumnInfo(name = "entryNameOther")
     private String entryNameOther;
 
-    /**
-     * 版本
-     */
-    @ColumnInfo(name = "version", defaultValue = "0")
-    @NonNull
-    private Integer version;
 
     /**
      * 创建时间
@@ -63,7 +57,8 @@ public class Entry implements Serializable {
     /**
      * 更新时间
      */
-    @ColumnInfo(name = "updateTime")
+//    @ColumnInfo(name = "updateTime")
+    @ColumnInfo(defaultValue = "(strftime('%s','now'))")
     private Long updateTime;
 
 
@@ -97,13 +92,6 @@ public class Entry implements Serializable {
         this.entryNameOther = entryNameOther;
     }
 
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
 
     public Long getCreateTime() {
         return createTime;
@@ -136,10 +124,9 @@ public class Entry implements Serializable {
                 "id=" + id +
                 ", entryName='" + entryName + '\'' +
                 ", entryNameOther='" + entryNameOther + '\'' +
-                ", version=" + version +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
-                ", entryContent='" + entryContent + '\'' +
+                ", entryContent=" + entryContent +
                 '}';
     }
 }

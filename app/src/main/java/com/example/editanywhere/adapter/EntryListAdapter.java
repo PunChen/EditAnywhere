@@ -147,7 +147,6 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
         // contents of the view with that element
         Entry entry = list.get(position);
         viewHolder.tv_entry_name.setText(entry.getEntryName());
-        viewHolder.tv_entry_version.setText(String.format("v%s", entry.getVersion()));
         viewHolder.iv_entry_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -179,7 +178,7 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, EntryInfoActivity.class);
-                intent.putExtra(Entry.class.getSimpleName(), entry.getEntryName());
+                intent.putExtra(Entry.class.getSimpleName(), entry.getId());
                 context.startActivity(intent);
             }
         });
@@ -202,7 +201,7 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
 
     private void postDeleteEntry(Entry entry, int pos) {
         Log.e("TAG", "postDeleteEntry: " + entry.toString());
-        EntryService.getInstance(activity).deleteByEntryName(entry.getEntryName(), new EntryServiceCallback<Boolean>() {
+        EntryService.getInstance(activity).deleteByEntryId(entry.getId(), new EntryServiceCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean result) {
                 Message message = new Message();
@@ -220,14 +219,12 @@ public class EntryListAdapter extends BaseAdapter<Entry, EntryListAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_entry_name;
-        private final TextView tv_entry_version;
         private final ImageButton iv_entry_delete;
 
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
             tv_entry_name = view.findViewById(R.id.tv_entry_name);
-            tv_entry_version = view.findViewById(R.id.tv_entry_version);
             iv_entry_delete = view.findViewById(R.id.iv_entry_delete);
         }
 

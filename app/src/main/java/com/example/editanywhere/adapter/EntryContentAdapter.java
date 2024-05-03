@@ -155,7 +155,7 @@ public class EntryContentAdapter extends BaseAdapter<String, EntryContentAdapter
     private void postEditEntryContent(int editPos, String destText) {
         List<String> newEntryContentList = new ArrayList<>(getEntryContentList());
         newEntryContentList.set(editPos, destText);
-        EntryService.getInstance(activity).editEntryContentByEntryName(entry.getEntryName(),
+        EntryService.getInstance(activity).editEntryContentByEntryId(entry.getId(),
                 newEntryContentList, new EntryServiceCallback<Entry>() {
                     @Override
                     public void onSuccess(Entry result) {
@@ -177,7 +177,7 @@ public class EntryContentAdapter extends BaseAdapter<String, EntryContentAdapter
         List<String> newEntryContentList = new ArrayList<>(getEntryContentList());
         if (deletePos < 0 || deletePos >= newEntryContentList.size()) return;
         newEntryContentList.remove(deletePos);
-        EntryService.getInstance(activity).editEntryContentByEntryName(entry.getEntryName(), newEntryContentList,
+        EntryService.getInstance(activity).editEntryContentByEntryId(entry.getId(), newEntryContentList,
                 new EntryServiceCallback<Entry>() {
                     @Override
                     public void onSuccess(Entry result) {

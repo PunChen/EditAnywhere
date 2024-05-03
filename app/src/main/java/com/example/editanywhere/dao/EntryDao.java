@@ -30,14 +30,13 @@ public interface EntryDao {
     @Query("select * from entry where id in (:ids)")
     List<Entry> queryAllByIds(List<Long> ids);
 
-    @Query("delete from entry where entryName=:entryName")
-    int deleteByEntryName(String entryName);
+    @Query("select * from entry where entryName like '%'||:entryName||'%'")
+    List<Entry> queryByEntryName(String entryName);
 
-    @Query("update entry set entryContent=:entryContent where id=:id")
-    int updateEntryContentById(Long id, String entryContent);
+    @Query("delete from entry where id=:id")
+    void deleteById(Long id);
 
-    @Query("select * from entry " +
-            "where entryName=:entryName " +
-            "and version=(select max(version) from entry where entryName=:entryName)")
-    Entry queryLatestByEntryName(String entryName);
+    @Query("update entry set entryContent=:entryContent, updateTime=createTime where id=:id")
+    void updateEntryContentById(Long id, String entryContent);
+
 }

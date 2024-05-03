@@ -113,12 +113,11 @@ public class EntryListFragment extends CustomFragment {
 
                     });
                 } else {
-                    EntryService.getInstance(activity).queryByEntryName(newText, new EntryServiceCallback<Entry>() {
+                    EntryService.getInstance(activity).queryByEntryName(newText, new EntryServiceCallback<List<Entry>>() {
                         @Override
-                        public void onSuccess(Entry result) {
-                            refreshEntryList(List.of(result));
+                        public void onSuccess(List<Entry> result) {
+                            refreshEntryList(result);
                         }
-
                         @Override
                         public void onFailure(String errMsg) {
                             ToastUtil.toast(activity, errMsg);
