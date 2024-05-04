@@ -8,6 +8,7 @@ import com.example.editanywhere.utils.EntryServiceCallback;
 import com.example.editanywhere.utils.SPUtil;
 
 import java.util.List;
+import java.util.Set;
 
 public abstract class EntryService {
 
@@ -39,6 +40,7 @@ public abstract class EntryService {
     public abstract void addByEntryName(String entryName, EntryServiceCallback<Entry> callback);
 
     public abstract void deleteByEntryId(Long id, EntryServiceCallback<Boolean> callback);
+    public abstract void deleteByEntryIdSet(Set<Long> idSet, EntryServiceCallback<Boolean> callback);
 
     public abstract void editEntryContentByEntryId(Long id, List<String> entryContent, EntryServiceCallback<Entry> callback);
 
@@ -46,7 +48,8 @@ public abstract class EntryService {
 
     public abstract void queryByEntryId(Long id, EntryServiceCallback<Entry> callback);
 
-    public abstract void queryByEntryName(String entryName, EntryServiceCallback<List<Entry>> callback);
+    public abstract void queryByEntryNameOrContent(String text, EntryServiceCallback<List<Entry>> callback);
+    public abstract void queryByEntryNameOrContentInNotebook(Long bookId, String text, EntryServiceCallback<List<Entry>> callback);
 
     public abstract void addByBatch(List<Entry> entryList, EntryServiceCallback<List<Long>> callback);
 

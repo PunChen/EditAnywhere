@@ -11,6 +11,7 @@ import com.example.editanywhere.utils.OKHttpUtil;
 import com.example.editanywhere.utils.OkHttpCallBack;
 
 import java.util.List;
+import java.util.Set;
 
 public class RemoteEntryService extends EntryService {
     private static final String TAG = "RemoteEntryService";
@@ -40,6 +41,11 @@ public class RemoteEntryService extends EntryService {
 
     @Override
     public void deleteByEntryId(Long id, EntryServiceCallback<Boolean> callback) {
+
+    }
+
+    @Override
+    public void deleteByEntryIdSet(Set<Long> idSet, EntryServiceCallback<Boolean> callback) {
 
     }
 
@@ -97,7 +103,12 @@ public class RemoteEntryService extends EntryService {
     }
 
     @Override
-    public void queryByEntryName(String entryName, EntryServiceCallback<List<Entry>> callback) {
+    public void queryByEntryNameOrContent(String text, EntryServiceCallback<List<Entry>> callback) {
+
+    }
+
+    @Override
+    public void queryByEntryNameOrContentInNotebook(Long bookId, String text, EntryServiceCallback<List<Entry>> callback) {
 
     }
 

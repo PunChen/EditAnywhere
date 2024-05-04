@@ -1,9 +1,12 @@
 package com.example.editanywhere.adapter;
 
-public class AdapterEvent {
+public class AdapterEvent<T> {
     private Long arg1;
     private Integer arg2;
-    private Object obj;
+    private T obj;
+
+    public AdapterEvent() {}
+    public AdapterEvent(AdapterEventType type) {this.type = type;}
 
     private AdapterEventType type;
 
@@ -23,11 +26,11 @@ public class AdapterEvent {
         this.arg2 = arg2;
     }
 
-    public Object getObj() {
+    public T getObj() {
         return obj;
     }
 
-    public void setObj(Object obj) {
+    public void setObj(T obj) {
         this.obj = obj;
     }
 

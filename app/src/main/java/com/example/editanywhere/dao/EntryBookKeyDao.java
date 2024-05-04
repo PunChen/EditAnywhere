@@ -8,6 +8,7 @@ import com.example.editanywhere.entity.model.EntryBookKey;
 import com.example.editanywhere.entity.model.Notebook;
 
 import java.util.List;
+import java.util.Set;
 
 @Dao
 public interface EntryBookKeyDao {
@@ -31,10 +32,12 @@ public interface EntryBookKeyDao {
     List<EntryBookKey> queryBookIdsByEntryId(Long entryId);
 
     @Query("delete from entry_book_key where bookId=:bookId")
-    int deleteByBookId(Long bookId);
+    void deleteByBookId(Long bookId);
+
+    @Query("delete from entry_book_key where entryId in (:entryIdSet)")
+    void deleteByEntryIdSet(Set<Long> entryIdSet);
 
     @Query("delete from entry_book_key where entryId=:entryId")
-    int deleteByEntryId(Long entryId);
-
+    void deleteByEntryId(Long entryId);
 
 }

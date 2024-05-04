@@ -17,6 +17,7 @@ import com.example.editanywhere.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public final class NoteBookService {
 
@@ -131,6 +132,17 @@ public final class NoteBookService {
             return id != null;
         } catch (Exception e) {
             Log.e(TAG, "addEntryToNotebook error , msg: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public Boolean deleteEntryBookKeyByEntryId(Set<Long> entryIdSet) {
+        try {
+            entryBookKeyDao.deleteByEntryIdSet(entryIdSet);
+            return true;
+        } catch (Exception e) {
+            String msg = String.format("deleteEntryBookKeyByEntryId fail id:%s err:%s", entryIdSet, e.getMessage());
+            Log.e(TAG, msg);
             return false;
         }
     }

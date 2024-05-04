@@ -1,18 +1,13 @@
 package com.example.editanywhere.adapter;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +17,6 @@ import com.example.editanywhere.R;
 import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.entity.view.NotebookView;
 import com.example.editanywhere.service.NoteBookService;
-import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,19 +40,18 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
                 List<NotebookView> notebooks = (List<NotebookView>) msg.obj;
                 onDataSetChanged(notebooks);
                 // 全量加载笔记本完成后触发词条刷新机制
-                if (otherAdapterListener != null) {
-                    AdapterEvent event = new AdapterEvent();
-                    event.setType(AdapterEventType.EVENT_REFRESH_ENTRY_LIST);
-                    otherAdapterListener.onEvent(event);
+                if (adapterEventListener != null) {
+                    adapterEventListener.onEvent(new AdapterEvent<>(AdapterEventType.EVENT_REFRESH_ENTRY_LIST));
                 }
             }
         }
     };
-    private AdapterEventListener otherAdapterListener;
+    private AdapterEventListener adapterEventListener;
 
-    public void setOtherAdapterListener(AdapterEventListener otherAdapterListener) {
-        this.otherAdapterListener = otherAdapterListener;
+    public void setAdapterEventListener(AdapterEventListener adapterEventListener) {
+        this.adapterEventListener = adapterEventListener;
     }
+
     public NotebookView getSelectedNotebook() {
         for (NotebookView view : list) {
             if (view.getSelected()) {
@@ -115,13 +108,8 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
             @Override
             public void onClick(View view) {
                 changeSelected(pos);
-                if (otherAdapterListener != null) {
-                    AdapterEvent event = new AdapterEvent();
-                    if (!notebook.isAll()) {
-                        event.setArg1(notebook.getId());
-                    }
-                    event.setType(AdapterEventType.EVENT_REFRESH_ENTRY_LIST);
-                    otherAdapterListener.onEvent(event);
+                if (adapterEventListener != null) {
+                    adapterEventListener.onEvent(new AdapterEvent<>(AdapterEventType.EVENT_REFRESH_ENTRY_LIST));
                 }
             }
         });
@@ -144,6 +132,7 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_inner;
+
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View

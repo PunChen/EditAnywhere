@@ -2,6 +2,8 @@ package com.example.editanywhere.ui.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,11 +12,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.editanywhere.EntryInfoActivity;
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.adapter.AdapterEventType;
@@ -23,13 +28,17 @@ import com.example.editanywhere.adapter.EntryListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
 import com.example.editanywhere.databinding.FragmentEntryListBinding;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.view.EntryView;
 import com.example.editanywhere.entity.view.NotebookView;
 import com.example.editanywhere.service.EntryService;
+import com.example.editanywhere.service.NoteBookService;
 import com.example.editanywhere.utils.EntryServiceCallback;
 import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class EntryListFragment extends CustomFragment {
@@ -39,6 +48,8 @@ public class EntryListFragment extends CustomFragment {
     private FragmentEntryListBinding binding;
     private EntryListAdapter entryListAdapter;
     private BookViewAdapter bookViewAdapter;
+
+    private Boolean isSearching = false;
 
     public EntryListFragment(Activity activity) {
         this.activity = activity;
@@ -64,9 +75,24 @@ public class EntryListFragment extends CustomFragment {
         bookViewAdapter = new BookViewAdapter(activity);
         rcBookList.setAdapter(bookViewAdapter);
 
-        bookViewAdapter.setOtherAdapterListener(event -> {
+        bookViewAdapter.setAdapterEventListener(event -> {
             if (event.getType() == AdapterEventType.EVENT_REFRESH_ENTRY_LIST) {
-                entryListAdapter.refreshAll(bookViewAdapter.getSelectedNotebook());
+                if (isSearching) {
+                    String text = binding.svSearchEntry.getQuery().toString();
+                    entryListAdapter.searchContentByBook(text, bookViewAdapter.getSelectedNotebook());
+                } else {
+                    entryListAdapter.refreshAll(bookViewAdapter.getSelectedNotebook());
+                }
+            }
+        });
+        entryListAdapter.setAdapterEventListener(event -> {
+            if (event.getType() == AdapterEventType.EVENT_SHOW_ENTRY_OP_MENU) {
+                showBottomOpMenu();
+            } else if (event.getType() == AdapterEventType.EVENT_HIDE_ENTRY_OP_MENU) {
+                hideBottomOpMenu();
+            } else if (event.getType() == AdapterEventType.EVENT_ENTRY_CLICK) {
+                // 启动词条详情活动冰获得返回结果
+
             }
         });
         // 加载笔记本列表
@@ -74,7 +100,83 @@ public class EntryListFragment extends CustomFragment {
         //toolbar
         initToolbar();
 
+        // 底部词条操作
+        initBottomOpMenu();
         return root;
+    }
+
+    private void showBottomOpMenu() {
+        binding.clEntryOperateGroup.setVisibility(View.VISIBLE);
+        entryListAdapter.setBatchOperating(true);
+    }
+
+    private void hideBottomOpMenu() {
+        binding.clEntryOperateGroup.setVisibility(View.GONE);
+        entryListAdapter.setBatchOperating(false);
+    }
+
+    private void initBottomOpMenu() {
+        binding.clEntryOperateGroup.setVisibility(View.GONE);
+        binding.rbActionCancel.setOnClickListener(v -> {
+            binding.clEntryOperateGroup.setVisibility(View.GONE);
+            entryListAdapter.setCheckStatusForAllEntry(false, false);
+            hideBottomOpMenu();
+        });
+        binding.rbActionSelectAll.setOnClickListener(v ->
+                entryListAdapter.setCheckStatusForAllEntry(true, !entryListAdapter.isAllChecked()));
+        binding.rbActionMoveTo.setOnClickListener(v -> {
+            List<EntryView> selectedEntry = entryListAdapter.getAllSelectedEntry();
+            Set<Long> idSet = selectedEntry.stream().map(EntryView::getId).collect(Collectors.toSet());
+
+            // todo move entry to notebook
+        });
+        binding.rbActionDelete.setOnClickListener(v -> {
+            showDeleteEntryAlertDialog();
+        });
+
+    }
+
+    private void showDeleteEntryAlertDialog() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
+        //通过AlertDialog.Builder创建出一个AlertDialog的实例
+        dialog.setTitle("");//设置对话框的标题
+        dialog.setMessage("确认删除？");//设置对话框的内容
+        dialog.setCancelable(true);//设置对话框是否可以取消
+        dialog.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+            //确定按钮的点击事件
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                List<EntryView> toDelList = entryListAdapter.getAllSelectedEntry();
+                Set<Long> idSet = toDelList.stream().map(EntryView::getId).collect(Collectors.toSet());
+                EntryService.getInstance(activity).deleteByEntryIdSet(idSet, new EntryServiceCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        if (result) {
+                            // 删除词条之后，删除笔记本中的关联关系
+                            if (!NoteBookService.getInstance(activity).deleteEntryBookKeyByEntryId(idSet)) {
+                                ToastUtil.toast(activity, "deleteEntryBookKeyByEntryId fail");
+                            } else {
+                                entryListAdapter.deleteSelectedEntryOnView();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String errMsg) {
+                        ToastUtil.toast(activity, errMsg);
+                    }
+                });
+                dialog.dismiss();
+            }
+        });
+        dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            //取消按钮的点击事件
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();//显示对话框
     }
 
     private void initToolbar() {
@@ -91,6 +193,17 @@ public class EntryListFragment extends CustomFragment {
             return false;
         });
 
+        binding.svSearchEntry.setOnSearchClickListener(v -> {
+            toolbar.getMenu().findItem(R.id.action_add_entry).setEnabled(false);
+            isSearching = true;
+        });
+
+        binding.svSearchEntry.setOnCloseListener(() -> {
+            toolbar.getMenu().findItem(R.id.action_add_entry).setEnabled(true);
+            isSearching = false;
+            return false;
+        });
+
         binding.svSearchEntry.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -100,29 +213,9 @@ public class EntryListFragment extends CustomFragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText == null || "".equals(newText)) {
-                    EntryService.getInstance(activity).queryAll(new EntryServiceCallback<List<Entry>>() {
-                        @Override
-                        public void onSuccess(List<Entry> result) {
-                            refreshEntryList(result);
-                        }
-
-                        @Override
-                        public void onFailure(String errMsg) {
-                            ToastUtil.toast(activity, errMsg);
-                        }
-
-                    });
+                    entryListAdapter.refreshAll(bookViewAdapter.getSelectedNotebook());
                 } else {
-                    EntryService.getInstance(activity).queryByEntryName(newText, new EntryServiceCallback<List<Entry>>() {
-                        @Override
-                        public void onSuccess(List<Entry> result) {
-                            refreshEntryList(result);
-                        }
-                        @Override
-                        public void onFailure(String errMsg) {
-                            ToastUtil.toast(activity, errMsg);
-                        }
-                    });
+                    entryListAdapter.searchContentByBook(newText, bookViewAdapter.getSelectedNotebook());
                 }
                 return false;
             }

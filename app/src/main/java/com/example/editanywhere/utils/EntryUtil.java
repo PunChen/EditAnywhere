@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.alibaba.fastjson2.JSON;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.view.EntryView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -117,5 +118,29 @@ public class EntryUtil {
         return strings;
     }
 
+    public static EntryView toEntryView(Entry entry) {
+        EntryView view = new EntryView();
+        view.setId(entry.getId());
+        view.setEntryContent(entry.getEntryContent());
+        view.setEntryName(entry.getEntryName());
+        view.setCreateTime(entry.getCreateTime());
+        view.setUpdateTime(entry.getUpdateTime());
+        view.setEntryNameOther(entry.getEntryNameOther());
+        view.setShowCheckbox(false);// 是否显示checkbox
+        view.setChecked(false);// 是否选中
+        return view;
+    }
+
+    public static boolean contentContains(Entry entry, String text) {
+        if (entry == null || entry.getEntryContent() == null || entry.getEntryContent().size() == 0) {
+            return false;
+        }
+        for (String str : entry.getEntryContent()) {
+            if (str.contains(text)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

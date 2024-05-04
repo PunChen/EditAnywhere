@@ -25,6 +25,7 @@
     <string name="entry_edit">添加内容</string>
     <string name="entry_edit_ensure">确认修改</string>
 
+
     <string name="entry_content_edit">修改</string>
     <string name="entry_content_delete">删除</string>
 
@@ -58,4 +59,10 @@
     <string name="book_all">全部</string>
     <string name="book_name">笔记本名称</string>
     <string name="book_desc">笔记本描述</string>
+    <!--词条操作-->
+    <string name="action_move">移动到</string>
+    <string name="action_delete">删除</string>
+    <string name="action_select_all">全选</string>
+    <string name="action_cancel">取消</string>
+    <string name="search_hint">查找指定笔记本</string>
 </resources>

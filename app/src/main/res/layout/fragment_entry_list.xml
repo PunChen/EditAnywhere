@@ -1,50 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_gray"
+    android:background="@color/middle_gray"
     tools:context=".ui.fragments.EntryListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/abl_app_bar_layout"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.EditAnywhere.AppBarOverlay">
+        android:theme="@style/Theme.EditAnywhere.AppBarOverlay"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="center"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.EditAnywhere.PopupOverlay"
             app:menu="@menu/menu_add_entry"
             app:navigationIcon="@drawable/ic_menu_list"
-            android:layout_gravity="center"
-            >
+            app:popupTheme="@style/Theme.EditAnywhere.PopupOverlay">
+
             <androidx.appcompat.widget.SearchView
+                app:queryHint="@string/search_hint"
                 android:id="@+id/sv_search_entry"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        app:layout_constraintTop_toBottomOf="@+id/abl_app_bar_layout"
-        app:layout_constraintBottom_toTopOf="@id/rc_entry_list"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/rc_book_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        />
-    <androidx.recyclerview.widget.RecyclerView
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rc_book_list"
+        app:layout_constraintBottom_toTopOf="@id/rc_entry_list"
+        app:layout_constraintTop_toBottomOf="@+id/abl_app_bar_layout" />
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rc_entry_list"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0"
-        />
+        app:layout_constraintBottom_toTopOf="@+id/cl_entry_operate_group"
+        app:layout_constraintTop_toBottomOf="@+id/rc_book_list" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_entry_operate_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <RadioGroup
+            android:padding="@dimen/dp_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/rb_action_move_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:drawableTop="@drawable/ic_action_move_to"
+                android:text="@string/action_move"
+                android:textAlignment="center"
+                android:textSize="@dimen/sp_12" />
+
+            <RadioButton
+                android:id="@+id/rb_action_select_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:drawableTop="@drawable/ic_action_select_all"
+                android:text="@string/action_select_all"
+                android:textAlignment="center"
+                android:textSize="@dimen/sp_12" />
+
+            <RadioButton
+                android:id="@+id/rb_action_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:drawableTop="@drawable/ic_action_delete"
+                android:text="@string/action_delete"
+                android:textAlignment="center"
+                android:textSize="@dimen/sp_12" />
+
+            <RadioButton
+                android:id="@+id/rb_action_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:drawableTop="@drawable/ic_action_cancel"
+                android:text="@string/action_cancel"
+                android:textAlignment="center"
+                android:textSize="@dimen/sp_12" />
+
+        </RadioGroup>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

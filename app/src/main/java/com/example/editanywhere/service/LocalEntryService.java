@@ -11,12 +11,14 @@ import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.entity.model.EntryBookKey;
 import com.example.editanywhere.utils.EntryServiceBatchQueryCallback;
 import com.example.editanywhere.utils.EntryServiceCallback;
+import com.example.editanywhere.utils.EntryUtil;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LocalEntryService extends EntryService {
@@ -51,10 +53,25 @@ public class LocalEntryService extends EntryService {
     }
 
     @Override
+    public void deleteByEntryIdSet(Set<Long> idSet, EntryServiceCallback<Boolean> callback) {
+        try {
+            entryDao.deleteByIdSet(idSet);
+            callback.onSuccess(true);
+        }catch (Exception e) {
+            String msg = String.format("deleteByIdSet fail, id:%s err:%s", idSet, e.getMessage());
+            Log.e(TAG, msg);
+            callback.onFailure(msg);
+        }
+    }
+
+    @Override
     public void editEntryContentByEntryId(Long id, List<String> entryContent, EntryServiceCallback<Entry> callback) {
         try {
-            entryDao.updateEntryContentById(id, JSON.toJSONString(entryContent));
             Entry entry = entryDao.queryById(id);
+            entry.setEntryContent(entryContent);
+            entry.setUpdateTime(new Date().getTime());
+            entryDao.updateEntry(entry);
+            entry = entryDao.queryById(id);
             callback.onSuccess(entry);
         }catch (Exception e) {
             String msg = String.format("editEntryContentByEntryId fail, id:%s err:%s", id, e.getMessage());
@@ -89,12 +106,24 @@ public class LocalEntryService extends EntryService {
     }
 
     @Override
-    public void queryByEntryName(String entryName, EntryServiceCallback<List<Entry>> callback) {
+    public void queryByEntryNameOrContent(String entryName, EntryServiceCallback<List<Entry>> callback) {
         try {
-            List<Entry> entry = entryDao.queryByEntryName(entryName);
+            List<Entry> entry = entryDao.queryByEntryNameOrContent(entryName);
             callback.onSuccess(entry);
         }catch (Exception e) {
             String msg = String.format("queryByEntryName fail, entryName:%s err:%s", entryName, e.getMessage());
+            Log.e(TAG, msg);
+            callback.onFailure(msg);
+        }
+    }
+
+    @Override
+    public void queryByEntryNameOrContentInNotebook(Long bookId, String text, EntryServiceCallback<List<Entry>> callback) {
+        try {
+            List<Entry> entries = entryDao.queryByEntryNameOrContentInBook(bookId, text);
+            callback.onSuccess(entries);
+        }catch (Exception e) {
+            String msg = String.format("queryByEntryNameOrContentInNotebook fail, text:%s err:%s", text, e.getMessage());
             Log.e(TAG, msg);
             callback.onFailure(msg);
         }
@@ -164,6 +193,7 @@ public class LocalEntryService extends EntryService {
     private Long addByEntryNameAndContent(String entryName, List<String> entryContent) {
         try {
             Entry entry = new Entry();
+            entry.setId(null);
             entry.setEntryName(entryName);
             entry.setEntryContent(entryContent);
             entry.setCreateTime(new Date().getTime());

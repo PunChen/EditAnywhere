@@ -1,71 +1,49 @@
-package com.example.editanywhere.entity.model;
-
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.Index;
-import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
-
-import com.example.editanywhere.entity.converter.DateConverter;
-import com.example.editanywhere.entity.converter.ListConverter;
-import com.example.editanywhere.utils.DBConst;
+package com.example.editanywhere.entity.view;
 
 import java.io.Serializable;
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
-import lombok.extern.log4j.Log4j2;
 
-/**
- * 词条表
- * tab_entry
- * author: chainhow
- * date: 2023-06-15 22:53:00
- */
+
 @Data
-@Log4j2
-@Entity(tableName = DBConst.TAB_NAME_ENTRY, indices = {@Index(value = {"entryName"}, unique = false)})
-@TypeConverters({DateConverter.class, ListConverter.class})
-public class Entry implements Serializable {
+@Builder
+public class EntryView implements Serializable {
     /**
      * 自增主键
      */
-    @PrimaryKey(autoGenerate = true)
     private Long id;
 
     /**
      * 词条名称
      */
-    @ColumnInfo(name = "entryName", defaultValue = "")
-    @NonNull
     private String entryName;
 
     /**
      * 其他词条名称
      */
-    @ColumnInfo(name = "entryNameOther")
     private String entryNameOther;
 
 
     /**
      * 创建时间
      */
-    @ColumnInfo(name = "createTime")
     private Long createTime;
 
     /**
      * 更新时间
      */
-    @ColumnInfo(name = "updateTime")
-    private Long updateTime;
 
+    private Long updateTime;
 
     /**
      * 词条内容列表
      */
-    @ColumnInfo(name = "entryContent")
     private List<String> entryContent;
+
+    private Boolean checked;
+    private Boolean showCheckbox;
 
     public Long getId() {
         return id;
@@ -91,7 +69,6 @@ public class Entry implements Serializable {
         this.entryNameOther = entryNameOther;
     }
 
-
     public Long getCreateTime() {
         return createTime;
     }
@@ -108,7 +85,6 @@ public class Entry implements Serializable {
         this.updateTime = updateTime;
     }
 
-
     public List<String> getEntryContent() {
         return entryContent;
     }
@@ -117,15 +93,34 @@ public class Entry implements Serializable {
         this.entryContent = entryContent;
     }
 
+    public Boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(Boolean checked) {
+        this.checked = checked;
+    }
+
+
+    public Boolean getShowCheckbox() {
+        return showCheckbox;
+    }
+
+    public void setShowCheckbox(Boolean showCheckbox) {
+        this.showCheckbox = showCheckbox;
+    }
+
     @Override
     public String toString() {
-        return "Entry{" +
+        return "EntryView{" +
                 "id=" + id +
                 ", entryName='" + entryName + '\'' +
                 ", entryNameOther='" + entryNameOther + '\'' +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", entryContent=" + entryContent +
+                ", checked=" + checked +
+                ", showCheckbox=" + showCheckbox +
                 '}';
     }
 }
