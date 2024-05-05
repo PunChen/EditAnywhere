@@ -11,6 +11,7 @@ import com.example.editanywhere.utils.OKHttpUtil;
 import com.example.editanywhere.utils.OkHttpCallBack;
 
 import java.util.List;
+import java.util.Set;
 
 public class RemoteEntryService extends EntryService {
     private static final String TAG = "RemoteEntryService";
@@ -39,14 +40,19 @@ public class RemoteEntryService extends EntryService {
     }
 
     @Override
-    public void deleteByEntryName(String entryName, EntryServiceCallback callback) {
-        Log.i(TAG, "deleteByEntryName: enter");
+    public void deleteByEntryId(Long id, EntryServiceCallback<Boolean> callback) {
+
     }
 
     @Override
-    public void editEntryContentByEntryName(String entryName, List<String> entryContent, EntryServiceCallback<Entry> callback) {
+    public void deleteByEntryIdSet(Set<Long> idSet, EntryServiceCallback<Boolean> callback) {
+
+    }
+
+    @Override
+    public void editEntryContentByEntryId(Long id, List<String> entryContent, EntryServiceCallback<Entry> callback) {
         OKHttpUtil.post(ApiUti.API_ENTRY_EDIT,
-                new ApiUti.Builder().add("entryName", entryName).build(),
+                new ApiUti.Builder().add("id", id).build(),
                 new OkHttpCallBack() {
                     @Override
                     public void onSuccess(String res) {
@@ -60,8 +66,6 @@ public class RemoteEntryService extends EntryService {
                     }
                 });
     }
-
-
     @Override
     public void queryAll(EntryServiceCallback<List<Entry>> callback) {
         OKHttpUtil.post(ApiUti.API_ENTRY_QUERY_ALL,
@@ -81,9 +85,9 @@ public class RemoteEntryService extends EntryService {
     }
 
     @Override
-    public void queryByEntryName(String entryName, EntryServiceCallback<Entry> callback) {
+    public void queryByEntryId(Long id, EntryServiceCallback<Entry> callback) {
         OKHttpUtil.post(ApiUti.API_ENTRY_QUERY,
-                new ApiUti.Builder().add("entryName", entryName).build(),
+                new ApiUti.Builder().add("id", id).build(),
                 new OkHttpCallBack() {
                     @Override
                     public void onSuccess(String res) {
@@ -99,17 +103,12 @@ public class RemoteEntryService extends EntryService {
     }
 
     @Override
-    public void queryLatestByMatchEntryContent(String searchText, EntryServiceCallback<List<Entry>> callback) {
+    public void queryByEntryNameOrContent(String text, EntryServiceCallback<List<Entry>> callback) {
 
     }
 
     @Override
-    public void queryHistoryByMatchEntryContent(String searchText, EntryServiceCallback<List<Entry>> callback) {
-
-    }
-
-    @Override
-    public void queryHistoryByEntryName(String entryName, EntryServiceCallback<List<Entry>> callback) {
+    public void queryByEntryNameOrContentInNotebook(Long bookId, String text, EntryServiceCallback<List<Entry>> callback) {
 
     }
 
@@ -125,6 +124,11 @@ public class RemoteEntryService extends EntryService {
 
     @Override
     public void addByEntryNameAndContent(String entryName, List<String> entryContent, EntryServiceCallback<Entry> callback) {
+
+    }
+
+    @Override
+    public void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback) {
 
     }
 

@@ -4,13 +4,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
+import android.util.Log;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -30,19 +28,8 @@ public class EntryInfoActivity extends AppCompatActivity {
 
     private static final int MSG_ID_UPDATE_LIST = 1;
     private static final int MSG_ID_TOAST = 2;
-    private static final String MSG_KEY_TOAST_MSG = "TOAST_MSG";
-    private final Handler handler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == MSG_ID_TOAST) {
-                String toastMsg = msg.getData().getString(MSG_KEY_TOAST_MSG);
-                if (toastMsg != null) {
-                    Toast.makeText(EntryInfoActivity.this, toastMsg, Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    };
+    private static final int MSG_ID_UPDATE = 3;
+    private static final String TAG = "EntryInfoActivity";
     private ActivityEntryInfoBinding binding;
     private Entry entry;
     private EntryContentAdapter entryContentAdapter;
@@ -68,12 +55,13 @@ public class EntryInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void initViewByEntry(Entry entry) {
-        this.entry = entry;
+    private void initViewByEntry() {
         binding.tvEntryName.setText(entry.getEntryName());
-        binding.tvEntryVersion.setText("v" + entry.getVersion());
         binding.tvCreateTime.setText(DateUtil.dateFormat(entry.getCreateTime(), DateUtil.DEFAULT_DATE_FORMAT));
         binding.tvUpdateTime.setText(DateUtil.dateFormat(entry.getUpdateTime(), DateUtil.DEFAULT_DATE_FORMAT));
+    }
+
+    private void initAdapter() {
         entryContentAdapter = new EntryContentAdapter(this);
         RecyclerViewNoBugLinearLayoutManager layoutManager = new RecyclerViewNoBugLinearLayoutManager(this);
         binding.rvEntryContent.setLayoutManager(layoutManager);
@@ -84,11 +72,17 @@ public class EntryInfoActivity extends AppCompatActivity {
     private void initEntry() {
         Intent intent = getIntent();
 
-        String entryName = intent.getStringExtra(Entry.class.getSimpleName());
-        EntryService.getInstance(EntryInfoActivity.this).queryByEntryName(entryName, new EntryServiceCallback<Entry>() {
+        long id = intent.getLongExtra(Entry.class.getSimpleName(), -1L);
+        if (id == -1L) {
+            ToastUtil.toast(EntryInfoActivity.this, "initEntry fail");
+            return;
+        }
+        EntryService.getInstance(EntryInfoActivity.this).queryByEntryId(id, new EntryServiceCallback<Entry>() {
             @Override
             public void onSuccess(Entry result) {
-                initViewByEntry(result);
+                entry = result;
+                initViewByEntry();
+                initAdapter();
             }
 
             @Override
@@ -100,7 +94,6 @@ public class EntryInfoActivity extends AppCompatActivity {
     }
 
     private void showAddEntryContentAlertDialog() {
-
         AlertDialog.Builder dialog = new AlertDialog.Builder(EntryInfoActivity.this);
         EditText editText = new EditText(EntryInfoActivity.this);
         editText.setHint("添加内容");
@@ -116,7 +109,7 @@ public class EntryInfoActivity extends AppCompatActivity {
                 if (!"".equals(text)) {
                     postAddEntryContent(text);
                 } else {
-                    makeToast("input can not be empty!");
+                    ToastUtil.toast(EntryInfoActivity.this, "input can not be empty!");
                 }
                 dialog.dismiss();
             }
@@ -131,21 +124,22 @@ public class EntryInfoActivity extends AppCompatActivity {
         dialog.show();//显示对话框
     }
 
-    private void makeToast(String msg) {
-        Message message = new Message();
-        message.what = MSG_ID_TOAST;
-        message.getData().putString(MSG_KEY_TOAST_MSG, msg);
-        handler.sendMessage(message);
+    private void updateViewWithEntry(Entry result, String addContent) {
+        this.entry = result;
+        initViewByEntry();
+        if (entryContentAdapter != null) {
+            entryContentAdapter.onDataSetInsertOneSync(0, addContent);
+        }
     }
 
     private void postAddEntryContent(String addText) {
         List<String> newEntryContentList = new ArrayList<>(entryContentAdapter.getEntryContentList());
         newEntryContentList.add(0, addText);
-        EntryService.getInstance(EntryInfoActivity.this).editEntryContentByEntryName(
-                entry.getEntryName(), newEntryContentList, new EntryServiceCallback<Entry>() {
+        EntryService.getInstance(EntryInfoActivity.this).editEntryContentByEntryId(entry.getId(),
+                newEntryContentList, new EntryServiceCallback<Entry>() {
                     @Override
                     public void onSuccess(Entry result) {
-                        syncAdapterData(addText);
+                        updateViewWithEntry(result, addText);
                     }
 
                     @Override
@@ -155,8 +149,5 @@ public class EntryInfoActivity extends AppCompatActivity {
                 });
     }
 
-    private void syncAdapterData(String addText) {
-        entryContentAdapter.onDataSetInsertOneSync(0, addText);
-    }
 
 }

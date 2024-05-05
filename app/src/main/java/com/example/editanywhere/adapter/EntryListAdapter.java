@@ -1,9 +1,7 @@
 package com.example.editanywhere.adapter;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,27 +10,34 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.editanywhere.EntryInfoActivity;
+import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.view.EntryView;
+import com.example.editanywhere.entity.view.NotebookView;
 import com.example.editanywhere.service.EntryService;
+import com.example.editanywhere.service.NoteBookService;
+import com.example.editanywhere.utils.DateUtil;
 import com.example.editanywhere.utils.EntryServiceCallback;
+import com.example.editanywhere.utils.EntryUtil;
 import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
-public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.ViewHolder> {
-
-
+public class EntryListAdapter extends BaseAdapter<EntryView, EntryListAdapter.ViewHolder> {
     private static final String TAG = "EntryListAdapter";
     private static final int MSG_ID_UPDATE_LIST = 1;
     private static final int MSG_ID_TOAST = 2;
@@ -40,7 +45,19 @@ public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.View
     private static final int MSG_ID_ITEM_INSERT = 4;
     private static final int MSG_ID_ITEM_EDIT = 5;
     private static final String MSG_KEY_TOAST_MSG = "TOAST_MSG";
-    private final List<Entry> entryList = new ArrayList<>();
+
+    public Boolean getBatchOperating() {
+        return isBatchOperating;
+    }
+
+    public void setBatchOperating(Boolean batchOperating) {
+        isBatchOperating = batchOperating;
+        if (!isBatchOperating) {
+            setCheckStatusForAllEntry(false, false);
+        }
+    }
+
+    private Boolean isBatchOperating = false;
     private final Context context;
     private final Activity activity;
     private final Handler handler = new Handler(Looper.getMainLooper()) {
@@ -49,17 +66,14 @@ public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.View
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_ID_UPDATE_LIST:
-                    List<Entry> entryList = (List<Entry>) msg.obj;
+                    List<EntryView> entryList = (List<EntryView>) msg.obj;
+                    if (isBatchOperating) {
+                        entryList.forEach(obj -> {
+                            obj.setShowCheckbox(true);
+                            obj.setChecked(false);
+                        });
+                    }
                     onDataSetChanged(entryList);
-                    break;
-                case MSG_ID_ITEM_INSERT:
-                    Entry entry = (Entry) msg.obj;
-                    int pos = msg.arg1;
-                    onDataSetInsertOne(pos, entry);
-                    break;
-                case MSG_ID_ITEM_DELETE:
-                    pos = msg.arg1;
-                    onDataSetDeleteOne(pos);
                     break;
             }
         }
@@ -68,37 +82,71 @@ public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.View
     public EntryListAdapter(Activity activity) {
         this.activity = activity;
         this.context = activity;
-        refreshAll();
     }
 
-    public void refreshAll() {
-        EntryService.getInstance(activity).queryAll(new EntryServiceCallback<List<Entry>>() {
-            @Override
-            public void onSuccess(List<Entry> result) {
-                initList(result);
-            }
+    public void searchContentByBook(String text, NotebookView notebookView) {
+        if (notebookView == null || notebookView.isAll()) {
+            EntryService.getInstance(activity).queryByEntryNameOrContent(text, new EntryServiceCallback<>() {
+                @Override
+                public void onSuccess(List<Entry> result) {
+                    initList(result);
+                }
 
-            @Override
-            public void onFailure(String errMsg) {
-                ToastUtil.toast(activity, errMsg);
-            }
+                @Override
+                public void onFailure(String errMsg) {
+                    ToastUtil.toast(activity, "queryByEntryNameOrContent fail, err: " + errMsg);
+                }
+            });
+        } else {
+            EntryService.getInstance(activity).queryByEntryNameOrContentInNotebook(notebookView.getId(), text, new EntryServiceCallback<>() {
+                @Override
+                public void onSuccess(List<Entry> result) {
+                    initList(result);
+                }
 
-        });
+                @Override
+                public void onFailure(String errMsg) {
+                    ToastUtil.toast(activity, "queryByEntryNameOrContentInNotebook fail, err: " + errMsg);
+                }
+            });
+        }
     }
 
-    public List<Entry> getEntryList() {
-        return entryList;
+    public void refreshAll(NotebookView notebookView) {
+        if (notebookView == null || notebookView.isAll()) {
+            EntryService.getInstance(activity).queryAll(new EntryServiceCallback<>() {
+                @Override
+                public void onSuccess(List<Entry> result) {
+                    initList(result);
+                }
+
+                @Override
+                public void onFailure(String errMsg) {
+                    ToastUtil.toast(activity, "queryAll fail, err: " + errMsg);
+                }
+            });
+        } else {
+            EntryService.getInstance(activity).queryAllByNotebookId(notebookView.getId(), new EntryServiceCallback<>() {
+                @Override
+                public void onSuccess(List<Entry> result) {
+                    initList(result);
+                }
+
+                @Override
+                public void onFailure(String errMsg) {
+                    ToastUtil.toast(activity, "queryAllByNotebookId fail, err: " + errMsg);
+                }
+            });
+        }
     }
 
-    private String getTag() {
-        return this.getClass().getSimpleName();
-    }
 
-    public void tryAddEntry(String entryName) {
+    public void tryAddEntry(NotebookView notebookView, String entryName) {
         EntryService.getInstance(activity).addByEntryName(entryName, new EntryServiceCallback<Entry>() {
             @Override
             public void onSuccess(Entry result) {
-                onDataSetInsertOneSync(0, result);
+                onDataSetInsertOneSync(0, EntryUtil.toEntryView(result));
+                addEntryToNotebook(result, notebookView);
             }
 
             @Override
@@ -106,6 +154,17 @@ public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.View
                 ToastUtil.toast(activity, errMsg);
             }
         });
+    }
+
+    private void addEntryToNotebook(Entry entry, NotebookView notebookView) {
+        if (notebookView.isAll()) { // 全部会默认加载所有，无需添加到笔记本中
+            return;
+        }
+        if (NoteBookService.getInstance(activity).addEntryToNotebook(notebookView.getId(), entry.getId())) {
+            refreshAll(notebookView);
+        } else {
+            ToastUtil.toast(context, "addEntryToNotebook fail");
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -124,124 +183,144 @@ public class EntryListAdapter extends RecyclerView.Adapter<EntryListAdapter.View
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        Entry entry = entryList.get(position);
+        EntryView entry = list.get(position);
         viewHolder.tv_entry_name.setText(entry.getEntryName());
-        viewHolder.tv_entry_version.setText(String.format("v%s", entry.getVersion()));
-        viewHolder.iv_entry_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        viewHolder.tv_entry_update_time.setText(DateUtil.dateFormat(entry.getUpdateTime(), DateUtil.DATE_FORMAT_DATE_TIME));
 
-                AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-                //通过AlertDialog.Builder创建出一个AlertDialog的实例
-                dialog.setTitle("");//设置对话框的标题
-                dialog.setMessage("确认删除？");//设置对话框的内容
-                dialog.setCancelable(true);//设置对话框是否可以取消
-                dialog.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                    //确定按钮的点击事件
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        postDeleteEntry(entry, viewHolder.getBindingAdapterPosition());
-                        dialog.dismiss();
-                    }
-                });
-                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    //取消按钮的点击事件
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();//显示对话框
-            }
-        });
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, EntryInfoActivity.class);
-                intent.putExtra(Entry.class.getSimpleName(), entry.getEntryName());
+                if (isBatchOperating) {// 批处理状态屏蔽点击事件
+                    return;
+                }
+                Intent intent = new Intent(activity, EntryInfoActivity.class);
+                intent.putExtra(Entry.class.getSimpleName(), entry.getId());
                 context.startActivity(intent);
+            }
+        });
+
+        viewHolder.cb_entry_select.setVisibility(entry.getShowCheckbox() ? View.VISIBLE : View.GONE);
+        viewHolder.cb_entry_select.setChecked(entry.getChecked());
+        viewHolder.cb_entry_select.setOnCheckedChangeListener((buttonView, isChecked) ->
+                // 使用绝对位置进行绑定
+                list.get(viewHolder.getAbsoluteAdapterPosition()).setChecked(isChecked));
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // 长按后显示隐藏所有的所有的checkbox冰选中当前
+                onSpecificEntryLongClick(entry);
+                if (adapterEventListener != null) {
+                    // 弹出词条操作列表
+                    adapterEventListener.onEvent(new AdapterEvent<>(AdapterEventType.EVENT_SHOW_ENTRY_OP_MENU));
+                }
+                return false;
             }
         });
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
-    @Override
-    public int getItemCount() {
-        return entryList.size();
+
+    private AdapterEventListener adapterEventListener;
+
+    public void setAdapterEventListener(AdapterEventListener adapterEventListener) {
+        this.adapterEventListener = adapterEventListener;
     }
 
-    public void onDataSetChanged(List<Entry> entryList) {
-        if (entryList != null) {
-            int preSize = this.entryList.size();
-            this.entryList.clear();
-            notifyItemRangeRemoved(0, preSize);
-            this.entryList.addAll(entryList);
-            notifyItemRangeChanged(0, entryList.size());
+    public boolean isAllChecked() {
+        // todo 数组优化
+        for (EntryView view : list) {
+            if (!view.getChecked()) {
+                return false;
+            }
         }
+        return true;
     }
 
-    public void onDataSetDeleteOne(int position) {
-        if (position >= 0 && position < entryList.size()) {
-            entryList.remove(position);
-            notifyItemRemoved(position);
-            //刷新下标，不然下标就重复
-            notifyItemRangeChanged(position, getItemCount() - position);
+    public List<EntryView> getAllSelectedEntry() {
+        return list.stream().filter(EntryView::getChecked).collect(Collectors.toList());
+    }
+
+    public void setCheckStatusForAllEntry(boolean showCheckbox, boolean checked) {
+        for (EntryView view : list) {
+            view.setShowCheckbox(showCheckbox);
+            view.setChecked(checked);
         }
+        notifyItemRangeChanged(0, list.size());
     }
 
-    public void onDataSetInsertOne(int position, Entry entry) {
-        if (position >= 0 && position <= entryList.size()) {
-            entryList.add(position, entry);
-            notifyItemInserted(position);
-            //刷新下标，不然下标就不连续
-            notifyItemRangeChanged(position, getItemCount() - position);
+    private void onSpecificEntryLongClick(final EntryView entryView) {
+        // 所有词条隐藏删除按钮，显示选中按钮
+        for (EntryView view : list) {
+            view.setShowCheckbox(true);
+            view.setChecked(false);
         }
+        // 当前词条选中
+        entryView.setChecked(true);
+        // 刷新界面
+        notifyItemRangeChanged(0, list.size());
+        isBatchOperating = true;// 进入操作状态
     }
 
-    public void onDataSetInsertOneSync(int position, Entry addEntry) {
-        Message message = new Message();
-        message.what = MSG_ID_ITEM_INSERT;
-        message.arg1 = position;
-        message.obj = addEntry;
-        handler.sendMessage(message);
+    public void onDataSetInsertOneSync(int position, EntryView addEntry) {
+        onDataSetInsertOne(position, addEntry);
+    }
+
+    public void deleteSelectedEntryOnView() {
+        List<int[]> delInfo = new ArrayList<>();
+        boolean first = true;
+        int cnt = 0;
+        int pos = 0;
+        for (int i = 0; i < list.size(); ++i) {
+            EntryView view = list.get(i);
+            if (view.getChecked()) {
+                if (first) {
+                    pos = i;
+                    first = false;
+                }
+                cnt++;
+            } else {
+                if (!first) {
+                    delInfo.add(new int[]{pos, cnt});
+                    first = true;
+                    cnt = 0;
+                    pos = 0;
+                }
+            }
+        }
+        if (cnt > 0) {
+            delInfo.add(new int[]{pos, cnt});
+        }
+        list.removeIf(EntryView::getChecked);
+        Log.e(TAG, "deleteSelectedEntryOnView: " + delInfo);
+        for (int i = delInfo.size() - 1; i >= 0; --i) {
+            int[] del = delInfo.get(i);
+            notifyItemRangeRemoved(del[0], del[1]);
+        }
+        setCheckStatusForAllEntry(false, false);
+        if (adapterEventListener != null) {
+            adapterEventListener.onEvent(new AdapterEvent<>(AdapterEventType.EVENT_HIDE_ENTRY_OP_MENU));
+        }
     }
 
     public void initList(List<Entry> entries) {
+        List<EntryView> entryViews = entries.stream().map(EntryUtil::toEntryView).collect(Collectors.toList());
         Message message = new Message();
-        message.obj = entries;
+        message.obj = entryViews;
         message.what = MSG_ID_UPDATE_LIST;
         handler.sendMessage(message);
     }
 
-    private void postDeleteEntry(Entry entry, int pos) {
-        Log.e("TAG", "postDeleteEntry: " + entry.toString());
-        EntryService.getInstance(activity).deleteByEntryName(entry.getEntryName(), new EntryServiceCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean result) {
-                Message message = new Message();
-                message.what = MSG_ID_ITEM_DELETE;
-                message.arg1 = pos;
-                handler.sendMessage(message);
-            }
-
-            @Override
-            public void onFailure(String errMsg) {
-                ToastUtil.toast(activity, errMsg);
-            }
-        });
-    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tv_entry_name;
-        private final TextView tv_entry_version;
-        private final ImageButton iv_entry_delete;
+        private final TextView tv_entry_update_time;
+        private final CheckBox cb_entry_select;
 
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
             tv_entry_name = view.findViewById(R.id.tv_entry_name);
-            tv_entry_version = view.findViewById(R.id.tv_entry_version);
-            iv_entry_delete = view.findViewById(R.id.iv_entry_delete);
+            tv_entry_update_time = view.findViewById(R.id.tv_entry_update_time);
+            cb_entry_select = view.findViewById(R.id.cb_entry_select);
         }
 
     }

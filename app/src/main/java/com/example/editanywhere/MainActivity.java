@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.editanywhere.databinding.ActivityMainBinding;
 import com.example.editanywhere.ui.fragments.AboutFragment;
+import com.example.editanywhere.ui.fragments.BookListFragment;
 import com.example.editanywhere.ui.fragments.CustomFragment;
 import com.example.editanywhere.ui.fragments.EntryListFragment;
 import com.example.editanywhere.ui.fragments.SettingsFragment;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     };
     private ActivityMainBinding binding;
     private DrawerLayout drawer;
+    private CustomFragment bookListFragment = null;
     private CustomFragment entryListFragment = null;
     private CustomFragment settingsFragment = null;
     private CustomFragment aboutFragment = null;
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 switchFragment(settingsFragment);
             } else if (id == R.id.nav_about) {
                 switchFragment(aboutFragment);
+            } else if (id == R.id.nav_book_list) {
+                switchFragment(bookListFragment);
             }
             // 关闭抽屉
             drawer.close();
@@ -77,24 +81,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initFragments() {
+        bookListFragment = new BookListFragment(this);
         entryListFragment = new EntryListFragment(this);
         settingsFragment = new SettingsFragment(this);
         aboutFragment = new AboutFragment(this);
-        fragmentArray = new CustomFragment[]{entryListFragment, settingsFragment, aboutFragment};
+        fragmentArray = new CustomFragment[]{bookListFragment, entryListFragment, settingsFragment, aboutFragment};
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction()
+                .add(R.id.fragment_main, bookListFragment)
                 .add(R.id.fragment_main, entryListFragment)
                 .add(R.id.fragment_main, settingsFragment)
                 .add(R.id.fragment_main, aboutFragment)
                 .commit();
         switchFragment(entryListFragment);
-    }
-
-    public void makeToast(String msg) {
-        Message message = new Message();
-        message.what = MSG_ID_TOAST;
-        message.getData().putString(MSG_KEY_TOAST_MSG, msg);
-        handler.sendMessage(message);
     }
 
     //统一的fragment切换
@@ -104,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             manager.beginTransaction().hide(fragment).commitNow();
         }
         manager.beginTransaction().show(targetFragment).commit();
+        targetFragment.onSwitch();
     }
 
     public void openDrawer() {
