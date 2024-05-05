@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class NoteBookService {
 
@@ -119,16 +120,16 @@ public final class NoteBookService {
                 Log.w(TAG, "addEntryToNotebook fail notebook: " + notebook + " entry: " + entry);
                 return false;
             }
-            EntryBookKey entryBookKey  = entryBookKeyDao.queryByEntryIdAndBookId(entryId, bookId);
+            EntryBookKey entryBookKey = entryBookKeyDao.queryByEntryIdAndBookId(entryId, bookId);
             if (entryBookKey != null) {
-                Log.w(TAG, "addEntryToNotebook fail key pair already exists: pair: " +entry +"-"+ bookId);
+                Log.w(TAG, "addEntryToNotebook fail key pair already exists: pair: " + entry + "-" + bookId);
                 return false;
             }
             EntryBookKey toAdd = new EntryBookKey();
             toAdd.setBookId(bookId);
             toAdd.setEntryId(entryId);
             toAdd.setId(null);
-            Long id  = entryBookKeyDao.insert(toAdd);
+            Long id = entryBookKeyDao.insert(toAdd);
             return id != null;
         } catch (Exception e) {
             Log.e(TAG, "addEntryToNotebook error , msg: " + e.getMessage());
@@ -142,6 +143,40 @@ public final class NoteBookService {
             return true;
         } catch (Exception e) {
             String msg = String.format("deleteEntryBookKeyByEntryId fail id:%s err:%s", entryIdSet, e.getMessage());
+            Log.e(TAG, msg);
+            return false;
+        }
+    }
+
+    public Boolean addEntryToNotebookByIdSet(Long bookId, Set<Long> entryIdSet) {
+        try {
+            List<EntryBookKey> entryBookKeys = entryIdSet.stream().map(entryId -> {
+                EntryBookKey key = new EntryBookKey();
+                key.setId(null);
+                key.setBookId(bookId);
+                key.setEntryId(entryId);
+                return key;
+            }).collect(Collectors.toList());
+            // 先删除，再插入，防止如果已经再里面，触发唯一索引异常
+            entryBookKeyDao.deleteByEntryIdSetFromBook(bookId, entryIdSet);
+            List<Long> retIds = entryBookKeyDao.insertList(entryBookKeys);
+            return retIds.size() == entryIdSet.size();
+        } catch (Exception e) {
+            String msg = String.format("addEntryToNotebookByIdSet fail id:%s err:%s", entryIdSet, e.getMessage());
+            Log.e(TAG, msg);
+            return false;
+        }
+    }
+
+    public Boolean moveEntryToNotebookByIdSet(Long fromBookId, Long tgtBookId, Set<Long> entryIdSet) {
+        try {
+            // 都进行删除
+            entryBookKeyDao.deleteByEntryIdSetFromBook(fromBookId, entryIdSet);
+            entryBookKeyDao.deleteByEntryIdSetFromBook(tgtBookId, entryIdSet);
+            // 添加到目标笔记本
+            return addEntryToNotebookByIdSet(tgtBookId, entryIdSet);
+        } catch (Exception e) {
+            String msg = String.format("addEntryToNotebookByIdSet fail id:%s err:%s", entryIdSet, e.getMessage());
             Log.e(TAG, msg);
             return false;
         }

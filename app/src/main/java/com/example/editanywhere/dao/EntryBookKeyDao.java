@@ -15,6 +15,8 @@ public interface EntryBookKeyDao {
 
     @Insert
     Long insert(EntryBookKey entryBookKey);
+    @Insert
+    List<Long> insertList(List<EntryBookKey> keyList);
 
     @Query("select * from entry_book_key where id=:id limit 1")
     EntryBookKey queryById(Long id);
@@ -36,6 +38,9 @@ public interface EntryBookKeyDao {
 
     @Query("delete from entry_book_key where entryId in (:entryIdSet)")
     void deleteByEntryIdSet(Set<Long> entryIdSet);
+
+    @Query("delete from entry_book_key where bookId=:bookId and entryId in (:entryIdSet)")
+    void deleteByEntryIdSetFromBook(Long bookId, Set<Long> entryIdSet);
 
     @Query("delete from entry_book_key where entryId=:entryId")
     void deleteByEntryId(Long entryId);

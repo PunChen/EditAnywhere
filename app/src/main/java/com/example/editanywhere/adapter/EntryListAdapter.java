@@ -200,7 +200,9 @@ public class EntryListAdapter extends BaseAdapter<EntryView, EntryListAdapter.Vi
 
         viewHolder.cb_entry_select.setVisibility(entry.getShowCheckbox() ? View.VISIBLE : View.GONE);
         viewHolder.cb_entry_select.setChecked(entry.getChecked());
-        viewHolder.cb_entry_select.setOnCheckedChangeListener((buttonView, isChecked) -> entry.setChecked(isChecked));
+        viewHolder.cb_entry_select.setOnCheckedChangeListener((buttonView, isChecked) ->
+                // 使用绝对位置进行绑定
+                list.get(viewHolder.getAbsoluteAdapterPosition()).setChecked(isChecked));
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {

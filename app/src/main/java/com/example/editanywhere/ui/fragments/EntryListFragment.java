@@ -22,12 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.editanywhere.EntryInfoActivity;
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
+import com.example.editanywhere.SelectNotebookActivity;
 import com.example.editanywhere.adapter.AdapterEventType;
 import com.example.editanywhere.adapter.BookViewAdapter;
 import com.example.editanywhere.adapter.EntryListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
 import com.example.editanywhere.databinding.FragmentEntryListBinding;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.entity.view.EntryView;
 import com.example.editanywhere.entity.view.NotebookView;
 import com.example.editanywhere.service.EntryService;
@@ -90,9 +92,6 @@ public class EntryListFragment extends CustomFragment {
                 showBottomOpMenu();
             } else if (event.getType() == AdapterEventType.EVENT_HIDE_ENTRY_OP_MENU) {
                 hideBottomOpMenu();
-            } else if (event.getType() == AdapterEventType.EVENT_ENTRY_CLICK) {
-                // 启动词条详情活动冰获得返回结果
-
             }
         });
         // 加载笔记本列表
@@ -115,6 +114,35 @@ public class EntryListFragment extends CustomFragment {
         entryListAdapter.setBatchOperating(false);
     }
 
+    private void moveEntryListToNotebook(NotebookView fromNotebook, Long tgtBookId, Set<Long> entryIdSet) {
+        if (fromNotebook.isAll()) {
+            if(!NoteBookService.getInstance(activity).addEntryToNotebookByIdSet(tgtBookId, entryIdSet)) {
+                ToastUtil.toast(activity, "addEntryToNotebookByIdSet fail");
+            }
+        } else {
+            if(!NoteBookService.getInstance(activity).moveEntryToNotebookByIdSet(fromNotebook.getId(), tgtBookId, entryIdSet)) {
+                ToastUtil.toast(activity, "moveEntryToNotebookByIdSet fail");
+            }
+        }
+        // 重新加载当前笔记本，注意有过滤场景
+        String text = binding.svSearchEntry.getQuery().toString();
+        entryListAdapter.searchContentByBook(text, bookViewAdapter.getSelectedNotebook());
+    }
+
+    private final ActivityResultLauncher<Intent> getSelectedNotebookLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (entryListAdapter != null && bookViewAdapter != null && result.getData() != null) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        List<EntryView> selectedEntry = entryListAdapter.getAllSelectedEntry();
+                        Set<Long> idSet = selectedEntry.stream().map(EntryView::getId).collect(Collectors.toSet());
+                        NotebookView fromNotebook = bookViewAdapter.getSelectedNotebook();
+                        long bookId = result.getData().getLongExtra(Notebook.class.getSimpleName(), -1L);
+                        if (bookId != -1L) {
+                            moveEntryListToNotebook(fromNotebook, bookId, idSet);
+                        }
+                    }
+                }
+            });
     private void initBottomOpMenu() {
         binding.clEntryOperateGroup.setVisibility(View.GONE);
         binding.rbActionCancel.setOnClickListener(v -> {
@@ -126,9 +154,13 @@ public class EntryListFragment extends CustomFragment {
                 entryListAdapter.setCheckStatusForAllEntry(true, !entryListAdapter.isAllChecked()));
         binding.rbActionMoveTo.setOnClickListener(v -> {
             List<EntryView> selectedEntry = entryListAdapter.getAllSelectedEntry();
-            Set<Long> idSet = selectedEntry.stream().map(EntryView::getId).collect(Collectors.toSet());
-
-            // todo move entry to notebook
+            if (selectedEntry.isEmpty()) {
+                ToastUtil.toast(activity, "no items selected");
+                return;
+            }
+            // 选择目标笔记本
+            Intent intent = new Intent(activity, SelectNotebookActivity.class);
+            getSelectedNotebookLauncher.launch(intent);
         });
         binding.rbActionDelete.setOnClickListener(v -> {
             showDeleteEntryAlertDialog();
