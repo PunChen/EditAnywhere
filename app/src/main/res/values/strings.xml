@@ -44,6 +44,8 @@
     <string name="settings_menu_reset">恢复默认</string>
     <string name="settings_import_from_csv_file">从csv文件导入</string>
     <string name="settings_export_to_csv_file">导出到csv文件</string>
+    <string name="settings_import_from_json_file">从json文件导入</string>
+    <string name="settings_export_to_json_file">导出到json文件</string>
     <!--关于-->
     <string name="about_title">关于标题</string>
     <string name="about_content">关于内容</string>

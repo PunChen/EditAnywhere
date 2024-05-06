@@ -24,29 +24,66 @@
             app:menu="@menu/menu_edit_settings"
             app:navigationIcon="@drawable/ic_menu_list"
             app:popupTheme="@style/Theme.EditAnywhere.PopupOverlay"
-            app:title="@string/settings_title"/>
+            app:title="@string/settings_title" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/abl_app_bar_layout">
 
         <include
             android:id="@+id/inc_et_line_server_address"
-            layout="@layout/edit_line" />
+            layout="@layout/edit_line"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <include
             android:id="@+id/inc_check_line_local_mode"
-            layout="@layout/check_line" />
+            layout="@layout/check_line"
+            app:layout_constraintTop_toBottomOf="@id/inc_et_line_server_address" />
 
-        <include android:id="@+id/inc_button_line_import"
-            layout="@layout/button_line"/>
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <include android:id="@+id/inc_button_line_export"
-            layout="@layout/button_line"/>
-    </LinearLayout>
+            <include
+                android:id="@+id/inc_button_line_import_csv"
+                layout="@layout/button_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <include
+                android:id="@+id/inc_button_line_export_csv"
+                layout="@layout/button_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/inc_button_line_import_json"
+                layout="@layout/button_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <include
+                android:id="@+id/inc_button_line_export_json"
+                layout="@layout/button_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -16,9 +16,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
+import com.alibaba.fastjson2.JSON;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
+import com.example.editanywhere.entity.model.Entry;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -66,6 +70,52 @@ public class FileUtils {
             return false;
         }
         return writeCSV(list, filePath, delimiter);
+    }
+
+    public static <T> List<T> readJsonFile(String filePath, Class<T> clazz) {
+        if (filePath == null || filePath.length() == 0 || !filePath.endsWith("json")) {
+            Log.w(TAG, "readJsonFile: invalid json file name");
+            return new ArrayList<>();
+        }
+        File file = getFile(filePath);
+        if (file == null) {
+            return new ArrayList<>();
+        }
+        try (FileInputStream fis = new FileInputStream(file)) {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(fis, Charset.defaultCharset()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            return JSON.parseArray(sb.toString(), clazz);
+        } catch (Exception e) {
+            Log.e(TAG, "readJsonFile: error: " + e.getMessage());
+        }
+        return new ArrayList<>();
+    }
+
+    public static boolean writeJsonFile(List<?> list, String filePath) {
+        if (filePath == null || filePath.length() == 0 || !filePath.endsWith("json")) {
+            Log.w(TAG, "writeJsonFile: invalid json file name");
+            return false;
+        }
+        File file = getFile(filePath);
+        if (file == null) {
+            return false;
+        }
+        try (Writer writer = new PrintWriter(file)) {
+            String str = JSON.toJSONString(list);
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
+            bufferedWriter.write(str);
+            bufferedWriter.flush();
+            bufferedWriter.close();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "writeJsonFile: error: " + e.getMessage());
+        }
+        return false;
     }
 
     private static File getFile(String filePath) {

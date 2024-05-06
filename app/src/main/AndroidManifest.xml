@@ -21,7 +21,8 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".SelectNotebookActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.EditAnywhere.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -39,8 +40,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.EditAnywhere.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.EditAnywhere.NoActionBar" />
 
         <meta-data
             android:name="xposedmodule"
