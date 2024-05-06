@@ -24,6 +24,7 @@ import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.databinding.FragmentSettingsBinding;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.enumrate.FileType;
 import com.example.editanywhere.service.EntryService;
 import com.example.editanywhere.utils.DateUtil;
 import com.example.editanywhere.utils.EntryServiceBatchQueryCallback;
@@ -52,26 +53,33 @@ public class SettingsFragment extends CustomFragment {
                 }
             });
     private boolean hasFileAccess = false;
+    private FileType fileType;
     // https://blog.csdn.net/hx7013/article/details/120916287
     private final ActivityResultLauncher<String> chooseFileLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(), result -> {
+                if (result == null) {
+                    return;
+                }
                 String filePath = FileUtils.getPath(fromActivity, result);
                 Log.i(TAG, "chooseFileLauncher: result:" + result + " filePath: " + filePath);
                 requestPermission();
-                doImportFromCsvFile(filePath);
+                doImportFromCsvFile(filePath, fileType);
             });
     private final ActivityResultLauncher<String> createFilerLauncher = registerForActivityResult(
             new ActivityResultContracts.CreateDocument(), result -> {
+                if (result == null) {
+                    return;
+                }
                 String filePath = FileUtils.getPath(fromActivity, result);
                 Log.i(TAG, "createFilerLauncher: result:" + result + " filePath: " + filePath);
                 String fileName;
                 if (filePath == null) {
-                    fileName = buildFileName();
+                    fileName = buildFileName(fileType);
                 } else {
                     fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
                 }
                 requestPermission();
-                doExportFromCsvFile(filePath, fileName);
+                doExportToFile(filePath, fileName, fileType);
             });
 
 
@@ -125,17 +133,35 @@ public class SettingsFragment extends CustomFragment {
 
         requestPermission();
 
-        binding.incButtonLineImport.btnInner.setText(R.string.settings_import_from_csv_file);
-        binding.incButtonLineImport.btnInner.setOnClickListener(v -> {
+        binding.incButtonLineImportCsv.btnInner.setText(R.string.settings_import_from_csv_file);
+        binding.incButtonLineImportCsv.btnInner.setOnClickListener(v -> {
             // 选择要导入的文件
+            fileType = FileType.CSV;
             chooseFileLauncher.getContract().createIntent(fromActivity, "*/*");
             chooseFileLauncher.launch("*/*");
         });
 
-        binding.incButtonLineExport.btnInner.setText(R.string.settings_export_to_csv_file);
-        binding.incButtonLineExport.btnInner.setOnClickListener(v -> {
+        binding.incButtonLineExportCsv.btnInner.setText(R.string.settings_export_to_csv_file);
+        binding.incButtonLineExportCsv.btnInner.setOnClickListener(v -> {
             // 选择要导出的文件
-            String fileName = buildFileName();
+            fileType = FileType.CSV;
+            String fileName = buildFileName(fileType);
+            createFilerLauncher.launch(fileName);
+        });
+
+        binding.incButtonLineImportJson.btnInner.setText(R.string.settings_import_from_json_file);
+        binding.incButtonLineImportJson.btnInner.setOnClickListener(v -> {
+            // 选择要导入的文件
+            fileType = FileType.JSON;
+            chooseFileLauncher.getContract().createIntent(fromActivity, "*/*");
+            chooseFileLauncher.launch("*/*");
+        });
+
+        binding.incButtonLineExportJson.btnInner.setText(R.string.settings_export_to_json_file);
+        binding.incButtonLineExportJson.btnInner.setOnClickListener(v -> {
+            // 选择要导出的文件
+            fileType = FileType.JSON;
+            String fileName = buildFileName(fileType);
             createFilerLauncher.launch(fileName);
         });
 
@@ -172,13 +198,13 @@ public class SettingsFragment extends CustomFragment {
         }
     }
 
-    private String buildFileName() {
+    private String buildFileName(FileType fileType) {
         String name = DateUtil.dateFormat(System.currentTimeMillis(), DateUtil.DATE_FORMAT_NUMBER);
-        name += ".csv";
+        name += fileType.type;
         return name;
     }
 
-    private void doExportFromCsvFile(String fullFilePath, String fileName) {
+    private void doExportToFile(String fullFilePath, String fileName, FileType fileType) {
 
         List<Entry> resultList = new ArrayList<>();
         EntryService.getInstance(fromActivity).queryAllByBatch(EntryUtil.EXPORT_BATCH_SIZE, new EntryServiceBatchQueryCallback() {
@@ -198,10 +224,14 @@ public class SettingsFragment extends CustomFragment {
             public void onFinish(boolean success, String errMsg) {
                 Log.i(TAG, "onFinish: success:" + success + " errMsg:" + errMsg);
                 if (success) {
-                    ToastUtil.toast(fromActivity, "start to write csv file:" + fileName);
-                    List<String[]> list = EntryUtil.toStringArrayList(resultList, true);
-                    FileUtils.writeCSVFile(list, fullFilePath, ',');
-                    ToastUtil.toast(fromActivity, "finish to write csv file:" + fileName);
+                    ToastUtil.toast(fromActivity, "start to write " + fileType.type + " file:" + fileName);
+                    if (fileType == FileType.CSV) {
+                        List<String[]> list = EntryUtil.toStringArrayList(resultList, true);
+                        FileUtils.writeCSVFile(list, fullFilePath, ',');
+                    } else if (fileType == FileType.JSON) {
+                        FileUtils.writeJsonFile(resultList, fullFilePath);
+                    }
+                    ToastUtil.toast(fromActivity, "finish to write " + fileType.type + " file:" + fileName);
                 } else {
                     ToastUtil.toast(fromActivity, errMsg);
                 }
@@ -209,10 +239,15 @@ public class SettingsFragment extends CustomFragment {
         });
     }
 
-    private void doImportFromCsvFile(String filePath) {
+    private void doImportFromCsvFile(String filePath, FileType fileType) {
         ToastUtil.toast(fromActivity, "import start");
-        List<String[]> list = FileUtils.readCSVFile(filePath, ',');
-        List<Entry> entryList = EntryUtil.fromStringArrayList(list, true);
+        List<Entry> entryList = new ArrayList<>();
+        if (fileType == FileType.CSV) {
+            List<String[]> list = FileUtils.readCSVFile(filePath, ',');
+            entryList = EntryUtil.fromStringArrayList(list, true);
+        } else if (fileType == FileType.JSON) {
+            entryList = FileUtils.readJsonFile(filePath, Entry.class);
+        }
         EntryService.getInstance(fromActivity).addByBatch(entryList, new EntryServiceCallback<List<Long>>() {
             @Override
             public void onSuccess(List<Long> result) {

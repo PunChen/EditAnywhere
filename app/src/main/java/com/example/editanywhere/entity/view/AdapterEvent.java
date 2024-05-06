@@ -1,4 +1,6 @@
-package com.example.editanywhere.adapter;
+package com.example.editanywhere.entity.view;
+
+import com.example.editanywhere.enumrate.AdapterEventType;
 
 public class AdapterEvent<T> {
     private Long arg1;

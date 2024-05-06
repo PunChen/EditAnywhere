@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.editanywhere.R;
 import com.example.editanywhere.entity.model.Notebook;
+import com.example.editanywhere.entity.view.AdapterEvent;
 import com.example.editanywhere.entity.view.NotebookView;
+import com.example.editanywhere.enumrate.AdapterEventType;
+import com.example.editanywhere.itf.AdapterEventListener;
 import com.example.editanywhere.service.NoteBookService;
 
 import java.util.List;

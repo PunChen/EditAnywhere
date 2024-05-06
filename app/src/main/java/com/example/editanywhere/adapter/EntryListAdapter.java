@@ -13,17 +13,17 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.editanywhere.EntryInfoActivity;
-import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.entity.model.Entry;
+import com.example.editanywhere.entity.view.AdapterEvent;
 import com.example.editanywhere.entity.view.EntryView;
 import com.example.editanywhere.entity.view.NotebookView;
+import com.example.editanywhere.enumrate.AdapterEventType;
+import com.example.editanywhere.itf.AdapterEventListener;
 import com.example.editanywhere.service.EntryService;
 import com.example.editanywhere.service.NoteBookService;
 import com.example.editanywhere.utils.DateUtil;

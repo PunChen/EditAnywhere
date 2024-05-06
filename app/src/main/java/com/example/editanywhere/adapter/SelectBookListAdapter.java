@@ -1,13 +1,10 @@
 package com.example.editanywhere.adapter;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.editanywhere.R;
 import com.example.editanywhere.entity.model.Notebook;
-import com.example.editanywhere.entity.view.NotebookView;
+import com.example.editanywhere.entity.view.AdapterEvent;
+import com.example.editanywhere.enumrate.AdapterEventType;
+import com.example.editanywhere.itf.AdapterEventListener;
 import com.example.editanywhere.service.NoteBookService;
-import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.List;
 

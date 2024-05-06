@@ -1,4 +1,4 @@
-package com.example.editanywhere.adapter;
+package com.example.editanywhere.enumrate;
 
 public enum AdapterEventType {
     EVENT_REFRESH_ENTRY_LIST,

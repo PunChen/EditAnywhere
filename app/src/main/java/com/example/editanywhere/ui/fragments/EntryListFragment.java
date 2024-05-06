@@ -19,11 +19,10 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.editanywhere.EntryInfoActivity;
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.SelectNotebookActivity;
-import com.example.editanywhere.adapter.AdapterEventType;
+import com.example.editanywhere.enumrate.AdapterEventType;
 import com.example.editanywhere.adapter.BookViewAdapter;
 import com.example.editanywhere.adapter.EntryListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
