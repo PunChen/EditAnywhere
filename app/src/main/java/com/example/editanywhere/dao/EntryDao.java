@@ -29,10 +29,10 @@ public interface EntryDao {
     @Query("select * from entry where id=:id limit 1")
     Entry queryById(Long id);
 
-    @Query("select * from entry order by createTime desc")
+    @Query("select * from entry order by updateTime desc")
     List<Entry> queryAll();
 
-    @Query("select * from entry where id in (:ids) order by createTime desc")
+    @Query("select * from entry where id in (:ids) order by updateTime desc")
     List<Entry> queryAllByIds(List<Long> ids);
 
     @Query("select * from entry where entryName like '%'||:entryName||'%' or entryContent like '%'||:entryName||'%' order by createTime desc")
