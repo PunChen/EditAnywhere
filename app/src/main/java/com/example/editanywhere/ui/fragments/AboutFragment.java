@@ -39,6 +39,7 @@ public class AboutFragment extends CustomFragment {
         final Toolbar toolbar = binding.tbToolbar;
         toolbar.setNavigationOnClickListener(view -> fromActivity.openDrawer());
         final LinearLayout layout = binding.llUrlContainer;
+        layout.removeAllViews();
         for (String key : ProjectInfoUtil.relatedProjectUrl.keySet()) {
             String val = ProjectInfoUtil.relatedProjectUrl.get(key);
             TextView title = new TextView(fromActivity);
