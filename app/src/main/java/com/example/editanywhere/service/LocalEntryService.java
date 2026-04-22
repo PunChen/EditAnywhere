@@ -133,7 +133,7 @@ public class LocalEntryService extends EntryService {
     public void addByBatch(List<Entry> entryList, EntryServiceCallback<List<Long>> callback) {
         List<Long> idList = new ArrayList<>();
         for (Entry entry : entryList) {
-            Long id = addByEntryNameAndContent(entry.getEntryName(), entry.getEntryContent());
+            Long id = addByEntryNameAndContent(entry);
             if (Objects.equals(id, EntryDao.INSERT_FAIL_RETURN_ID) || id == null) {
                 Log.e(TAG, "addByBatch: fail for " + entry);
                 continue;
@@ -147,6 +147,15 @@ public class LocalEntryService extends EntryService {
             return;
         }
         callback.onSuccess(idList);
+    }
+
+    private Long addByEntryNameAndContent(Entry entry) {
+        try {
+            return entryDao.insertEntry(entry);
+        } catch (Exception e) {
+            Log.e(TAG, "addByEntryNameAndContent fail: " + e.getMessage());
+            return null;
+        }
     }
 
     @Override
