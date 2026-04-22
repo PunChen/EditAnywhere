@@ -2,6 +2,9 @@ package com.example.editanywhere.adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
@@ -113,11 +116,20 @@ public class EntryContentAdapter extends BaseAdapter<String, EntryContentAdapter
                 showEditEntryContentAlertDialog(itemPos, list.get(itemPos));
             } else if (id == R.id.menu_entry_content_delete) {
                 postDeleteEntryContent(itemPos);
+            } else if (id == R.id.menu_entry_content_copy) {
+                copyToClipboard(activity, list.get(itemPos));
+                ToastUtil.toast(activity,activity.getResources().getString(R.string.tip_copied));
             }
             popupMenu.dismiss();
             return false;
         });
         popupMenu.show();
+    }
+
+    public static void copyToClipboard(Context context, String content) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("text", content);
+        clipboard.setPrimaryClip(clipData);
     }
 
     private void showEditEntryContentAlertDialog(int editPos, String orgText) {
