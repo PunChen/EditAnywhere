@@ -24,6 +24,7 @@
     <string name="entry_add">添加词条</string>
     <string name="entry_edit">添加内容</string>
     <string name="entry_edit_ensure">确认修改</string>
+    <string name="entry_edit_show_checkbox">显示复选框</string>
 
 
     <string name="entry_content_edit">修改</string>

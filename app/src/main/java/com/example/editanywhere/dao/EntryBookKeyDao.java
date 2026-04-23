@@ -5,7 +5,6 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.example.editanywhere.entity.model.EntryBookKey;
-import com.example.editanywhere.entity.model.Notebook;
 
 import java.util.List;
 import java.util.Set;
@@ -15,6 +14,7 @@ public interface EntryBookKeyDao {
 
     @Insert
     Long insert(EntryBookKey entryBookKey);
+
     @Insert
     List<Long> insertList(List<EntryBookKey> keyList);
 

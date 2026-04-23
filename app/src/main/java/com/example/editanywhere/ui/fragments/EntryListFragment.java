@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.SelectNotebookActivity;
-import com.example.editanywhere.enumrate.AdapterEventType;
 import com.example.editanywhere.adapter.BookViewAdapter;
 import com.example.editanywhere.adapter.EntryListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
@@ -31,6 +30,7 @@ import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.entity.view.EntryView;
 import com.example.editanywhere.entity.view.NotebookView;
+import com.example.editanywhere.enumrate.AdapterEventType;
 import com.example.editanywhere.service.EntryService;
 import com.example.editanywhere.service.NoteBookService;
 import com.example.editanywhere.utils.EntryServiceCallback;
@@ -49,7 +49,20 @@ public class EntryListFragment extends CustomFragment {
     private FragmentEntryListBinding binding;
     private EntryListAdapter entryListAdapter;
     private BookViewAdapter bookViewAdapter;
-
+    private final ActivityResultLauncher<Intent> getSelectedNotebookLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (entryListAdapter != null && bookViewAdapter != null && result.getData() != null) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        List<EntryView> selectedEntry = entryListAdapter.getAllSelectedEntry();
+                        Set<Long> idSet = selectedEntry.stream().map(EntryView::getId).collect(Collectors.toSet());
+                        NotebookView fromNotebook = bookViewAdapter.getSelectedNotebook();
+                        long bookId = result.getData().getLongExtra(Notebook.class.getSimpleName(), -1L);
+                        if (bookId != -1L) {
+                            moveEntryListToNotebook(fromNotebook, bookId, idSet);
+                        }
+                    }
+                }
+            });
     private Boolean isSearching = false;
 
     public EntryListFragment(Activity activity) {
@@ -115,11 +128,11 @@ public class EntryListFragment extends CustomFragment {
 
     private void moveEntryListToNotebook(NotebookView fromNotebook, Long tgtBookId, Set<Long> entryIdSet) {
         if (fromNotebook.isAll()) {
-            if(!NoteBookService.getInstance(activity).addEntryToNotebookByIdSet(tgtBookId, entryIdSet)) {
+            if (!NoteBookService.getInstance(activity).addEntryToNotebookByIdSet(tgtBookId, entryIdSet)) {
                 ToastUtil.toast(activity, "addEntryToNotebookByIdSet fail");
             }
         } else {
-            if(!NoteBookService.getInstance(activity).moveEntryToNotebookByIdSet(fromNotebook.getId(), tgtBookId, entryIdSet)) {
+            if (!NoteBookService.getInstance(activity).moveEntryToNotebookByIdSet(fromNotebook.getId(), tgtBookId, entryIdSet)) {
                 ToastUtil.toast(activity, "moveEntryToNotebookByIdSet fail");
             }
         }
@@ -128,20 +141,6 @@ public class EntryListFragment extends CustomFragment {
         entryListAdapter.searchContentByBook(text, bookViewAdapter.getSelectedNotebook());
     }
 
-    private final ActivityResultLauncher<Intent> getSelectedNotebookLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (entryListAdapter != null && bookViewAdapter != null && result.getData() != null) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        List<EntryView> selectedEntry = entryListAdapter.getAllSelectedEntry();
-                        Set<Long> idSet = selectedEntry.stream().map(EntryView::getId).collect(Collectors.toSet());
-                        NotebookView fromNotebook = bookViewAdapter.getSelectedNotebook();
-                        long bookId = result.getData().getLongExtra(Notebook.class.getSimpleName(), -1L);
-                        if (bookId != -1L) {
-                            moveEntryListToNotebook(fromNotebook, bookId, idSet);
-                        }
-                    }
-                }
-            });
     private void initBottomOpMenu() {
         binding.clEntryOperateGroup.setVisibility(View.GONE);
         binding.rbActionCancel.setOnClickListener(v -> {
@@ -267,7 +266,7 @@ public class EntryListFragment extends CustomFragment {
         NotebookView notebookView = bookViewAdapter.getSelectedNotebook();
         dialog.setPositiveButton("确认", (dialog12, which) -> {
             String text = editText.getText().toString();
-            if (!"".equals(text)) {
+            if (!text.isEmpty()) {
                 entryListAdapter.tryAddEntry(notebookView, text);
             } else {
                 Toast.makeText(activity, "input can not be empty!", Toast.LENGTH_SHORT).show();

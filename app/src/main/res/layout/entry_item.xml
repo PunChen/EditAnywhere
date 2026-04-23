@@ -19,48 +19,58 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <TextView
+                app:layout_constraintLeft_toLeftOf="parent"
                 android:id="@+id/tv_entry_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/dp_10"
+                android:layout_weight="1"
                 android:padding="@dimen/dp_5"
                 android:text="@string/entry_name"
                 android:textSize="@dimen/sp_20"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/cl_action"
                 app:layout_constraintTop_toTopOf="parent" />
-            <TextView
-                android:textSize="@dimen/sp_15"
-                android:layout_margin="@dimen/dp_10"
-                android:id="@+id/tv_entry_update_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/dp_5"
-                android:text="@string/entry_update_time"
-                app:layout_constraintBaseline_toBaselineOf="@id/tv_entry_name"
-                app:layout_constraintBottom_toBottomOf="parent"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_action"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/tv_entry_name" />
-
-
-            <CheckBox
-                android:minWidth="@dimen/dp_0"
-                android:minHeight="@dimen/dp_0"
-                android:visibility="visible"
-                android:checked="false"
-                android:id="@+id/cb_entry_select"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp_10"
-                android:contentDescription="@string/entry_delete"
-                android:padding="@dimen/dp_0"
-                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_constraintRight_toRightOf="parent">
 
+                <TextView
+                    android:id="@+id/tv_entry_update_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dp_10"
+                    android:padding="@dimen/dp_5"
+                    android:text="@string/entry_update_time"
+                    android:textSize="@dimen/sp_15"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/cb_entry_select"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+                <CheckBox
+                    android:id="@+id/cb_entry_select"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dp_10"
+                    android:checked="false"
+                    android:contentDescription="@string/entry_delete"
+                    android:minWidth="@dimen/dp_0"
+                    android:minHeight="@dimen/dp_0"
+                    android:padding="@dimen/dp_0"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     </androidx.cardview.widget.CardView>
 

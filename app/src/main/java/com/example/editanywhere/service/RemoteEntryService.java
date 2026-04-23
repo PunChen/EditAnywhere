@@ -3,6 +3,7 @@ package com.example.editanywhere.service;
 import android.util.Log;
 
 import com.alibaba.fastjson2.JSON;
+import com.example.editanywhere.entity.model.Content;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.utils.ApiUti;
 import com.example.editanywhere.utils.EntryServiceBatchQueryCallback;
@@ -50,7 +51,7 @@ public class RemoteEntryService extends EntryService {
     }
 
     @Override
-    public void editEntryContentByEntryId(Long id, List<String> entryContent, EntryServiceCallback<Entry> callback) {
+    public void editEntryContentByEntryId(Long id, List<Content> entryContent, EntryServiceCallback<Entry> callback) {
         OKHttpUtil.post(ApiUti.API_ENTRY_EDIT,
                 new ApiUti.Builder().add("id", id).build(),
                 new OkHttpCallBack() {
@@ -66,6 +67,7 @@ public class RemoteEntryService extends EntryService {
                     }
                 });
     }
+
     @Override
     public void queryAll(EntryServiceCallback<List<Entry>> callback) {
         OKHttpUtil.post(ApiUti.API_ENTRY_QUERY_ALL,
@@ -123,9 +125,15 @@ public class RemoteEntryService extends EntryService {
     }
 
     @Override
-    public void addByEntryNameAndContent(String entryName, List<String> entryContent, EntryServiceCallback<Entry> callback) {
+    public void addByEntryNameAndContent(String entryName, List<Content> entryContent, EntryServiceCallback<Entry> callback) {
 
     }
+
+    @Override
+    public void saveEntryShowContentCheckBox(Long id, boolean checked, EntryServiceCallback<Entry> callback) {
+
+    }
+
 
     @Override
     public void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback) {

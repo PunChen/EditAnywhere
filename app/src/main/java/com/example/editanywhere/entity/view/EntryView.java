@@ -1,5 +1,7 @@
 package com.example.editanywhere.entity.view;
 
+import com.example.editanywhere.entity.model.Content;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class EntryView implements Serializable {
     /**
      * 词条内容列表
      */
-    private List<String> entryContent;
+    private List<Content> entryContent;
 
     private Boolean checked;
     private Boolean showCheckbox;
@@ -85,11 +87,11 @@ public class EntryView implements Serializable {
         this.updateTime = updateTime;
     }
 
-    public List<String> getEntryContent() {
+    public List<Content> getEntryContent() {
         return entryContent;
     }
 
-    public void setEntryContent(List<String> entryContent) {
+    public void setEntryContent(List<Content> entryContent) {
         this.entryContent = entryContent;
     }
 
@@ -112,7 +114,7 @@ public class EntryView implements Serializable {
 
     @Override
     public String toString() {
-        return "EntryView{" +
+        return "Entry{" +
                 "id=" + id +
                 ", entryName='" + entryName + '\'' +
                 ", entryNameOther='" + entryNameOther + '\'' +

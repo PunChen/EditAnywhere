@@ -23,12 +23,18 @@ import java.util.stream.Collectors;
 public final class NoteBookService {
 
     private static final String TAG = "NoteBookService";
+    private static volatile NoteBookService instance;
     private final EditAnywhereDatabase database;
     private final NotebookDao notebookDao;
     private final EntryBookKeyDao entryBookKeyDao;
     private final EntryDao entryDao;
 
-    private static volatile NoteBookService instance;
+    private NoteBookService(Context context) {
+        database = EditAnywhereDatabase.getInstance(context);
+        notebookDao = database.getNotebookDao();
+        entryBookKeyDao = database.getEntryBookKeyDao();
+        entryDao = database.getEntryDao();
+    }
 
     public static NoteBookService getInstance(Activity activity) {
         if (instance == null) {
@@ -41,14 +47,6 @@ public final class NoteBookService {
         // todo notebook to server service
         boolean local = SPUtil.getBoolean(activity.getApplication(), SPUtil.TAG_WORKING_MODE_LOCAL, true);
         return instance;
-    }
-
-
-    private NoteBookService(Context context) {
-        database = EditAnywhereDatabase.getInstance(context);
-        notebookDao = database.getNotebookDao();
-        entryBookKeyDao = database.getEntryBookKeyDao();
-        entryDao = database.getEntryDao();
     }
 
     public List<Notebook> getAllNotebooks() {

@@ -6,11 +6,14 @@ public class AdapterEvent<T> {
     private Long arg1;
     private Integer arg2;
     private T obj;
-
-    public AdapterEvent() {}
-    public AdapterEvent(AdapterEventType type) {this.type = type;}
-
     private AdapterEventType type;
+
+    public AdapterEvent() {
+    }
+
+    public AdapterEvent(AdapterEventType type) {
+        this.type = type;
+    }
 
     public Long getArg1() {
         return arg1;

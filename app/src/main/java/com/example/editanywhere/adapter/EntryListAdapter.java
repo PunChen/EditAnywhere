@@ -32,7 +32,6 @@ import com.example.editanywhere.utils.EntryUtil;
 import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,21 +44,9 @@ public class EntryListAdapter extends BaseAdapter<EntryView, EntryListAdapter.Vi
     private static final int MSG_ID_ITEM_INSERT = 4;
     private static final int MSG_ID_ITEM_EDIT = 5;
     private static final String MSG_KEY_TOAST_MSG = "TOAST_MSG";
-
-    public Boolean getBatchOperating() {
-        return isBatchOperating;
-    }
-
-    public void setBatchOperating(Boolean batchOperating) {
-        isBatchOperating = batchOperating;
-        if (!isBatchOperating) {
-            setCheckStatusForAllEntry(false, false);
-        }
-    }
-
-    private Boolean isBatchOperating = false;
     private final Context context;
     private final Activity activity;
+    private Boolean isBatchOperating = false;
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -78,10 +65,22 @@ public class EntryListAdapter extends BaseAdapter<EntryView, EntryListAdapter.Vi
             }
         }
     };
+    private AdapterEventListener adapterEventListener;
 
     public EntryListAdapter(Activity activity) {
         this.activity = activity;
         this.context = activity;
+    }
+
+    public Boolean getBatchOperating() {
+        return isBatchOperating;
+    }
+
+    public void setBatchOperating(Boolean batchOperating) {
+        isBatchOperating = batchOperating;
+        if (!isBatchOperating) {
+            setCheckStatusForAllEntry(false, false);
+        }
     }
 
     public void searchContentByBook(String text, NotebookView notebookView) {
@@ -139,7 +138,6 @@ public class EntryListAdapter extends BaseAdapter<EntryView, EntryListAdapter.Vi
             });
         }
     }
-
 
     public void tryAddEntry(NotebookView notebookView, String entryName) {
         EntryService.getInstance(activity).addByEntryName(entryName, new EntryServiceCallback<Entry>() {
@@ -217,9 +215,6 @@ public class EntryListAdapter extends BaseAdapter<EntryView, EntryListAdapter.Vi
             }
         });
     }
-
-
-    private AdapterEventListener adapterEventListener;
 
     public void setAdapterEventListener(AdapterEventListener adapterEventListener) {
         this.adapterEventListener = adapterEventListener;

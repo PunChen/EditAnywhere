@@ -15,7 +15,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Data
 @Log4j2
-@Entity(tableName = DBConst.TAB_NAME_ENTRY_BOOK_KEY, indices = {@Index(value = {"entryId","bookId"}, unique = true)})
+@Entity(tableName = DBConst.TAB_NAME_ENTRY_BOOK_KEY, indices = {@Index(value = {"entryId", "bookId"}, unique = true)})
 @TypeConverters({DateConverter.class})
 public class EntryBookKey {
 

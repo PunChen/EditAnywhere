@@ -60,20 +60,21 @@ public class SelectBookListAdapter extends BaseAdapter<Notebook, SelectBookListA
 
     private AdapterEventListener adapterEventListener;
 
-    public void setAdapterEventListener(AdapterEventListener adapterEventListener) {
-        this.adapterEventListener = adapterEventListener;
-    }
-
     public SelectBookListAdapter(Activity activity) {
         super();
         this.activity = activity;
         this.context = activity;
     }
 
+    public void setAdapterEventListener(AdapterEventListener adapterEventListener) {
+        this.adapterEventListener = adapterEventListener;
+    }
+
     public void refreshAll() {
         List<Notebook> notebookList = NoteBookService.getInstance(activity).getAllNotebooks();
         initList(notebookList);
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
