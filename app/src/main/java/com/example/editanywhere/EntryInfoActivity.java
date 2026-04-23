@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -110,22 +109,7 @@ public class EntryInfoActivity extends AppCompatActivity {
     }
 
     private void setEntryContentShowCheckBox() {
-        // 数据库更新
-        entry.setShowContentCheckBox(!entry.getShowContentCheckBox());
-        EntryService.getInstance(EntryInfoActivity.this).saveOrEditEntry(entry, new EntryServiceCallback<Entry>() {
-            @Override
-            public void onSuccess(Entry result) {
-                ToastUtil.toast(EntryInfoActivity.this, "edit entry checked success");
-                // 界面更新
-                entryContentAdapter.initList(entry);
-            }
-
-            @Override
-            public void onFailure(String errMsg) {
-                ToastUtil.toast(EntryInfoActivity.this, "edit entry checked fail");
-                Log.e(TAG, "setEntryContentShowCheckBox: " + errMsg);
-            }
-        });
+        entryContentAdapter.setEntryContentShowCheckBox(!entry.getShowContentCheckBox());
     }
 
     private void showAddEntryContentAlertDialog() {

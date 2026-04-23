@@ -185,14 +185,11 @@ public class LocalEntryService extends EntryService {
     }
 
     @Override
-    public void saveOrEditEntry(Entry entry, EntryServiceCallback<Entry> callback) {
+    public void saveEntryShowContentCheckBox(Long id, boolean checked, EntryServiceCallback<Entry> callback) {
         try {
-            Long id = entry.getId();
-            if (entry.getId() == null) {
-                id = entryDao.insertEntry(entry);
-            } else {
-                entryDao.updateEntry(entry);
-            }
+            Entry entry = entryDao.queryById(id);
+            entry.setShowContentCheckBox(checked);
+            entryDao.updateEntry(entry);
             entry = entryDao.queryById(id);
             callback.onSuccess(entry);
         } catch (Exception e) {

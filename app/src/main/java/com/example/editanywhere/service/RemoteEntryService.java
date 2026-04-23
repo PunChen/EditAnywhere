@@ -130,9 +130,10 @@ public class RemoteEntryService extends EntryService {
     }
 
     @Override
-    public void saveOrEditEntry(Entry entry, EntryServiceCallback<Entry> callback) {
+    public void saveEntryShowContentCheckBox(Long id, boolean checked, EntryServiceCallback<Entry> callback) {
 
     }
+
 
     @Override
     public void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback) {

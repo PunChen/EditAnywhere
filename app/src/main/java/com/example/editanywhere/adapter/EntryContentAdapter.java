@@ -87,6 +87,12 @@ public class EntryContentAdapter extends BaseAdapter<Content, EntryContentAdapte
         this.activity = activity;
     }
 
+    public static void copyToClipboard(Context context, Content content) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("text", content.getContent());
+        clipboard.setPrimaryClip(clipData);
+    }
+
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
@@ -107,7 +113,6 @@ public class EntryContentAdapter extends BaseAdapter<Content, EntryContentAdapte
             showPopUpMenu(v, position);
             return false;
         });
-        viewHolder.itemView.setOnClickListener(view -> setContentItemChecked(entryContentItem, !entryContentItem.getChecked()));
 
         viewHolder.cb_content_item.setVisibility(entry.getShowContentCheckBox() ? View.VISIBLE : View.GONE);
         viewHolder.cb_content_item.setChecked(entryContentItem.getChecked());
@@ -149,12 +154,6 @@ public class EntryContentAdapter extends BaseAdapter<Content, EntryContentAdapte
             return false;
         });
         popupMenu.show();
-    }
-
-    public static void copyToClipboard(Context context, Content content) {
-        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clipData = ClipData.newPlainText("text", content.getContent());
-        clipboard.setPrimaryClip(clipData);
     }
 
     private void showEditEntryContentAlertDialog(int editPos, Content orgText) {
@@ -255,6 +254,25 @@ public class EntryContentAdapter extends BaseAdapter<Content, EntryContentAdapte
         message.arg1 = position;
         message.obj = addText;
         handler.sendMessage(message);
+    }
+
+    public void setEntryContentShowCheckBox(boolean checked) {
+        // 数据库更新
+        entry.setShowContentCheckBox(!entry.getShowContentCheckBox());
+        EntryService.getInstance(activity).saveEntryShowContentCheckBox(entry.getId(), checked, new EntryServiceCallback<Entry>() {
+            @Override
+            public void onSuccess(Entry result) {
+                Log.i(TAG, "edit entry checked success");
+                // 界面更新
+                initList(result);
+            }
+
+            @Override
+            public void onFailure(String errMsg) {
+                ToastUtil.toast(activity, "edit entry checked fail");
+                Log.e(TAG, "setEntryContentShowCheckBox: " + errMsg);
+            }
+        });
     }
 
     public List<Content> getEntryContentList() {

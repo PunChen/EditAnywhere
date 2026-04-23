@@ -73,13 +73,13 @@ public class Entry implements Serializable {
      * 是否展示内容checkbox
      */
     @ColumnInfo(name = "showContentCheckBox")
-    private Boolean showContentCheckBox;
+    private boolean showContentCheckBox;
 
-    public Boolean getShowContentCheckBox() {
+    public boolean getShowContentCheckBox() {
         return showContentCheckBox;
     }
 
-    public void setShowContentCheckBox(Boolean showContentCheckBox) {
+    public void setShowContentCheckBox(boolean showContentCheckBox) {
         this.showContentCheckBox = showContentCheckBox;
     }
 

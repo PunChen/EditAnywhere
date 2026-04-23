@@ -35,6 +35,7 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
     private static final String MSG_KEY_TOAST_MSG = "TOAST_MSG";
     private final Context context;
     private final Activity activity;
+    private AdapterEventListener adapterEventListener;
     private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -49,7 +50,12 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
             }
         }
     };
-    private AdapterEventListener adapterEventListener;
+
+    public BookViewAdapter(Activity activity) {
+        super();
+        this.activity = activity;
+        this.context = activity;
+    }
 
     public void setAdapterEventListener(AdapterEventListener adapterEventListener) {
         this.adapterEventListener = adapterEventListener;
@@ -62,12 +68,6 @@ public class BookViewAdapter extends BaseAdapter<NotebookView, BookViewAdapter.V
             }
         }
         return null;
-    }
-
-    public BookViewAdapter(Activity activity) {
-        super();
-        this.activity = activity;
-        this.context = activity;
     }
 
     public void refreshAll() {

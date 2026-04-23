@@ -49,7 +49,20 @@ public class EntryListFragment extends CustomFragment {
     private FragmentEntryListBinding binding;
     private EntryListAdapter entryListAdapter;
     private BookViewAdapter bookViewAdapter;
-
+    private final ActivityResultLauncher<Intent> getSelectedNotebookLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (entryListAdapter != null && bookViewAdapter != null && result.getData() != null) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        List<EntryView> selectedEntry = entryListAdapter.getAllSelectedEntry();
+                        Set<Long> idSet = selectedEntry.stream().map(EntryView::getId).collect(Collectors.toSet());
+                        NotebookView fromNotebook = bookViewAdapter.getSelectedNotebook();
+                        long bookId = result.getData().getLongExtra(Notebook.class.getSimpleName(), -1L);
+                        if (bookId != -1L) {
+                            moveEntryListToNotebook(fromNotebook, bookId, idSet);
+                        }
+                    }
+                }
+            });
     private Boolean isSearching = false;
 
     public EntryListFragment(Activity activity) {
@@ -127,21 +140,6 @@ public class EntryListFragment extends CustomFragment {
         String text = binding.svSearchEntry.getQuery().toString();
         entryListAdapter.searchContentByBook(text, bookViewAdapter.getSelectedNotebook());
     }
-
-    private final ActivityResultLauncher<Intent> getSelectedNotebookLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (entryListAdapter != null && bookViewAdapter != null && result.getData() != null) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        List<EntryView> selectedEntry = entryListAdapter.getAllSelectedEntry();
-                        Set<Long> idSet = selectedEntry.stream().map(EntryView::getId).collect(Collectors.toSet());
-                        NotebookView fromNotebook = bookViewAdapter.getSelectedNotebook();
-                        long bookId = result.getData().getLongExtra(Notebook.class.getSimpleName(), -1L);
-                        if (bookId != -1L) {
-                            moveEntryListToNotebook(fromNotebook, bookId, idSet);
-                        }
-                    }
-                }
-            });
 
     private void initBottomOpMenu() {
         binding.clEntryOperateGroup.setVisibility(View.GONE);

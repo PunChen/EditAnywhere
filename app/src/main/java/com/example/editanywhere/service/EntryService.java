@@ -60,7 +60,7 @@ public abstract class EntryService {
 
     public abstract void addByEntryNameAndContent(String entryName, List<Content> entryContent, EntryServiceCallback<Entry> callback);
 
-    public abstract void saveOrEditEntry(Entry entry, EntryServiceCallback<Entry> callback);
+    public abstract void saveEntryShowContentCheckBox(Long id, boolean checked, EntryServiceCallback<Entry> callback);
 
     // 根据笔记本id查询所属的所有词条
     public abstract void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback);

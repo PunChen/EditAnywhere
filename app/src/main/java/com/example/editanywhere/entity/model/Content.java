@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class Content {
     private String content;
-    private Boolean checked;
+    private boolean checked;
 
     public Content(String content, Boolean checked) {
         this.content = content;
