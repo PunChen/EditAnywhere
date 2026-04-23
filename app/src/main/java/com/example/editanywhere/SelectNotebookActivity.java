@@ -8,13 +8,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.editanywhere.entity.view.AdapterEvent;
-import com.example.editanywhere.itf.AdapterEventListener;
-import com.example.editanywhere.enumrate.AdapterEventType;
 import com.example.editanywhere.adapter.SelectBookListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
 import com.example.editanywhere.databinding.ActivitySelectNotebookBinding;
 import com.example.editanywhere.entity.model.Notebook;
+import com.example.editanywhere.entity.view.AdapterEvent;
+import com.example.editanywhere.enumrate.AdapterEventType;
+import com.example.editanywhere.itf.AdapterEventListener;
 
 public class SelectNotebookActivity extends AppCompatActivity {
 

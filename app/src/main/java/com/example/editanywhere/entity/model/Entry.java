@@ -6,6 +6,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.example.editanywhere.entity.converter.ContentConverter;
 import com.example.editanywhere.entity.converter.DateConverter;
 import com.example.editanywhere.entity.converter.ListConverter;
 import com.example.editanywhere.utils.DBConst;
@@ -18,15 +19,18 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
 /**
- * 词条表
- * tab_entry
- * author: chainhow
- * date: 2023-06-15 22:53:00
+ * 词条表 tab_entry author: chainhow date: 2023-06-15 22:53:00
  */
 @Data
 @Log4j2
-@Entity(tableName = DBConst.TAB_NAME_ENTRY, indices = {@Index(value = {"entryName"}, unique = false)})
-@TypeConverters({DateConverter.class, ListConverter.class})
+@Entity(
+        tableName = DBConst.TAB_NAME_ENTRY,
+        indices = {
+                @Index(
+                        value = {"entryName"},
+                        unique = false)
+        })
+@TypeConverters({DateConverter.class, ListConverter.class, ContentConverter.class})
 public class Entry implements Serializable {
     /**
      * 自增主键
@@ -47,7 +51,6 @@ public class Entry implements Serializable {
     @ColumnInfo(name = "entryNameOther")
     private String entryNameOther;
 
-
     /**
      * 创建时间
      */
@@ -60,12 +63,25 @@ public class Entry implements Serializable {
     @ColumnInfo(name = "updateTime")
     private Long updateTime;
 
-
     /**
      * 词条内容列表
      */
     @ColumnInfo(name = "entryContent")
-    private List<String> entryContent;
+    private List<Content> entryContent;
+
+    /**
+     * 是否展示内容checkbox
+     */
+    @ColumnInfo(name = "showContentCheckBox")
+    private Boolean showContentCheckBox;
+
+    public Boolean getShowContentCheckBox() {
+        return showContentCheckBox;
+    }
+
+    public void setShowContentCheckBox(Boolean showContentCheckBox) {
+        this.showContentCheckBox = showContentCheckBox;
+    }
 
     public Long getId() {
         return id;
@@ -91,7 +107,6 @@ public class Entry implements Serializable {
         this.entryNameOther = entryNameOther;
     }
 
-
     public Long getCreateTime() {
         return createTime;
     }
@@ -108,24 +123,13 @@ public class Entry implements Serializable {
         this.updateTime = updateTime;
     }
 
-
-    public List<String> getEntryContent() {
+    public List<Content> getEntryContent() {
         return entryContent;
     }
 
-    public void setEntryContent(List<String> entryContent) {
+    public void setEntryContent(List<Content> entryContent) {
         this.entryContent = entryContent;
     }
 
-    @Override
-    public String toString() {
-        return "Entry{" +
-                "id=" + id +
-                ", entryName='" + entryName + '\'' +
-                ", entryNameOther='" + entryNameOther + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", entryContent=" + entryContent +
-                '}';
-    }
+
 }

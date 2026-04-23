@@ -74,6 +74,7 @@ public class SelectBookListAdapter extends BaseAdapter<Notebook, SelectBookListA
         List<Notebook> notebookList = NoteBookService.getInstance(activity).getAllNotebooks();
         initList(notebookList);
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {

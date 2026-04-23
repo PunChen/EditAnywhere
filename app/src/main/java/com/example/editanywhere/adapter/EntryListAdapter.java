@@ -32,7 +32,6 @@ import com.example.editanywhere.utils.EntryUtil;
 import com.example.editanywhere.utils.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

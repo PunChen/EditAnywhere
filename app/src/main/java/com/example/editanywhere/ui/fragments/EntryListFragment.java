@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.editanywhere.MainActivity;
 import com.example.editanywhere.R;
 import com.example.editanywhere.SelectNotebookActivity;
-import com.example.editanywhere.enumrate.AdapterEventType;
 import com.example.editanywhere.adapter.BookViewAdapter;
 import com.example.editanywhere.adapter.EntryListAdapter;
 import com.example.editanywhere.bugfix.RecyclerViewNoBugLinearLayoutManager;
@@ -31,6 +30,7 @@ import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.entity.view.EntryView;
 import com.example.editanywhere.entity.view.NotebookView;
+import com.example.editanywhere.enumrate.AdapterEventType;
 import com.example.editanywhere.service.EntryService;
 import com.example.editanywhere.service.NoteBookService;
 import com.example.editanywhere.utils.EntryServiceCallback;
@@ -115,11 +115,11 @@ public class EntryListFragment extends CustomFragment {
 
     private void moveEntryListToNotebook(NotebookView fromNotebook, Long tgtBookId, Set<Long> entryIdSet) {
         if (fromNotebook.isAll()) {
-            if(!NoteBookService.getInstance(activity).addEntryToNotebookByIdSet(tgtBookId, entryIdSet)) {
+            if (!NoteBookService.getInstance(activity).addEntryToNotebookByIdSet(tgtBookId, entryIdSet)) {
                 ToastUtil.toast(activity, "addEntryToNotebookByIdSet fail");
             }
         } else {
-            if(!NoteBookService.getInstance(activity).moveEntryToNotebookByIdSet(fromNotebook.getId(), tgtBookId, entryIdSet)) {
+            if (!NoteBookService.getInstance(activity).moveEntryToNotebookByIdSet(fromNotebook.getId(), tgtBookId, entryIdSet)) {
                 ToastUtil.toast(activity, "moveEntryToNotebookByIdSet fail");
             }
         }
@@ -142,6 +142,7 @@ public class EntryListFragment extends CustomFragment {
                     }
                 }
             });
+
     private void initBottomOpMenu() {
         binding.clEntryOperateGroup.setVisibility(View.GONE);
         binding.rbActionCancel.setOnClickListener(v -> {
@@ -267,7 +268,7 @@ public class EntryListFragment extends CustomFragment {
         NotebookView notebookView = bookViewAdapter.getSelectedNotebook();
         dialog.setPositiveButton("确认", (dialog12, which) -> {
             String text = editText.getText().toString();
-            if (!"".equals(text)) {
+            if (!text.isEmpty()) {
                 entryListAdapter.tryAddEntry(notebookView, text);
             } else {
                 Toast.makeText(activity, "input can not be empty!", Toast.LENGTH_SHORT).show();

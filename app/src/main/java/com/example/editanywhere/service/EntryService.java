@@ -2,6 +2,7 @@ package com.example.editanywhere.service;
 
 import android.app.Activity;
 
+import com.example.editanywhere.entity.model.Content;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.utils.EntryServiceBatchQueryCallback;
 import com.example.editanywhere.utils.EntryServiceCallback;
@@ -40,22 +41,26 @@ public abstract class EntryService {
     public abstract void addByEntryName(String entryName, EntryServiceCallback<Entry> callback);
 
     public abstract void deleteByEntryId(Long id, EntryServiceCallback<Boolean> callback);
+
     public abstract void deleteByEntryIdSet(Set<Long> idSet, EntryServiceCallback<Boolean> callback);
 
-    public abstract void editEntryContentByEntryId(Long id, List<String> entryContent, EntryServiceCallback<Entry> callback);
+    public abstract void editEntryContentByEntryId(Long id, List<Content> entryContent, EntryServiceCallback<Entry> callback);
 
     public abstract void queryAll(EntryServiceCallback<List<Entry>> callback);
 
     public abstract void queryByEntryId(Long id, EntryServiceCallback<Entry> callback);
 
     public abstract void queryByEntryNameOrContent(String text, EntryServiceCallback<List<Entry>> callback);
+
     public abstract void queryByEntryNameOrContentInNotebook(Long bookId, String text, EntryServiceCallback<List<Entry>> callback);
 
     public abstract void addByBatch(List<Entry> entryList, EntryServiceCallback<List<Long>> callback);
 
     public abstract void queryAllByBatch(int batchSize, EntryServiceBatchQueryCallback callback);
 
-    public abstract void addByEntryNameAndContent(String entryName, List<String> entryContent, EntryServiceCallback<Entry> callback);
+    public abstract void addByEntryNameAndContent(String entryName, List<Content> entryContent, EntryServiceCallback<Entry> callback);
+
+    public abstract void saveOrEditEntry(Entry entry, EntryServiceCallback<Entry> callback);
 
     // 根据笔记本id查询所属的所有词条
     public abstract void queryAllByNotebookId(Long bookId, EntryServiceCallback<List<Entry>> callback);

@@ -3,6 +3,7 @@ package com.example.editanywhere.utils;
 import android.util.Log;
 
 import com.alibaba.fastjson2.JSON;
+import com.example.editanywhere.entity.model.Content;
 import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.entity.view.EntryView;
 
@@ -118,6 +119,13 @@ public class EntryUtil {
         return strings;
     }
 
+    public static Content toContentView(Content content) {
+        Content view = new Content();
+        view.setContent(content.getContent());
+        view.setChecked(content.getChecked());
+        return view;
+    }
+
     public static EntryView toEntryView(Entry entry) {
         EntryView view = new EntryView();
         view.setId(entry.getId());
@@ -135,8 +143,8 @@ public class EntryUtil {
         if (entry == null || entry.getEntryContent() == null || entry.getEntryContent().size() == 0) {
             return false;
         }
-        for (String str : entry.getEntryContent()) {
-            if (str.contains(text)) {
+        for (Content str : entry.getEntryContent()) {
+            if (str.getContent().contains(text)) {
                 return true;
             }
         }

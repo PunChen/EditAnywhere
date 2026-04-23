@@ -18,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.editanywhere.R;
-import com.example.editanywhere.entity.model.Entry;
 import com.example.editanywhere.entity.model.Notebook;
 import com.example.editanywhere.service.NoteBookService;
 import com.example.editanywhere.utils.ToastUtil;
